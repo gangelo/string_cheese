@@ -1,13 +1,13 @@
 require 'string_cheese/version'
 require 'string_cheese/engine'
-require 'string_cheese/labels'
+require 'string_cheese/var_labels'
 
 module StringCheese
-  extend Labels
+  extend VarLabels
 
   def self.create(vars, options = {})
-    var_labels = create_labels(vars)
-    create_engine(merge_labels(vars, var_labels), options)
+    var_labels = var_labels_create(vars)
+    create_engine(var_labels_merge(vars, var_labels), options)
   end
 
   def self.create_engine(vars, options = {})

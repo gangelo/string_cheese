@@ -37,6 +37,11 @@ module StringCheese
       self
     end
 
+    def respond_to?(symbol)
+      return true if super.respond_to?(symbol)
+      vars.respond_to?(symbol)
+    end
+
     def to_s
       replaced_text = text.dup
       vars.each_pair { |var, val| replaced_text.gsub!(/\b#{var}\b/, "[#{val}]") }
