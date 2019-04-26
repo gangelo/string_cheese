@@ -1,7 +1,7 @@
 require 'ostruct'
 
 module StringCheese
-  class Text
+  class Engine
     attr_reader :vars
 
     def initialize(vars, options = {})
