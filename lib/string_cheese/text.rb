@@ -4,7 +4,7 @@ module StringCheese
   class Text
     attr_reader :vars
 
-    def initialize(vars)
+    def initialize(vars, options = {})
       self.vars = vars
       clear
     end
