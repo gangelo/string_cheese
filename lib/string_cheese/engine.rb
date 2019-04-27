@@ -1,12 +1,40 @@
 require 'ostruct'
+require 'string_cheese/digs/options'
+require 'string_cheese/digs/options'
+require 'string_cheese/digs/labels'
+require 'string_cheese/digs/vars'
+require 'string_cheese/labels'
+require 'string_cheese/vars'
 
 module StringCheese
   class Engine
-    attr_reader :vars
+    include StringCheese::Vars
+    include StringCheese::Labels
+
+    attr_reader :_
 
     def initialize(vars, options = {})
-      self.vars = vars
+      self._ = OpenStruct.new({ vars: {}, labels: {}, options: {} })
+      initialize_options(options)
+      initialize_vars(vars)
+      initialize_labels(vars) if _.options.labels?
       clear
+    end
+
+    def initialize_options(options)
+      _.options = options.dup
+      _.options.extend(Digs::Options)
+    end
+
+    def initialize_vars(vars)
+      _.vars = vars.dup
+      _.vars.extend(Digs::Vars)
+    end
+
+    def initialize_labels(vars)
+      _.labels = create_labels(vars.dup)
+      binding.pry
+      _.labels.extend(Digs::Labels)
     end
 
     # Clears the text and initializes it with [text]
@@ -37,25 +65,59 @@ module StringCheese
       self
     end
 
+    def raw(text)
+      append_raw(text)
+      self
+    end
+
     def respond_to?(symbol)
       return true if super.respond_to?(symbol)
       vars.respond_to?(symbol)
     end
 
-    def to_s
-      replaced_text = text.dup
-      vars.each_pair { |var, val| replaced_text.gsub!(/\b#{var}\b/, "[#{val}]") }
+    def _to_s(options = { replace_vars: true, debug: false })
+      replaced_text = text
+      vars.each_pair do |var, val|
+        replacement_text = Varlabels.label?(var) ? "#{val}" : "[#{val}]"
+        puts "Would replace #{var} with #{replacement_text}" if options[:debug]
+        replaced_text.gsub!(/\b#{var}\b/, replacement_text) if options[:replace_vars]
+      end
+      replaced_text
+    end
+
+    def to_s(options = { replace_vars: true, debug: false })
+      replaced_text = text
+      vars = Vars.vars(vars.to_h)
+      labels = Varlabels.labels(vars.to_h)
+
+      # Replace the vars...
+      vars.each_pair do |var, val|
+        replacement_text = "[#{val}]"
+        puts "Would replace #{var} with #{replacement_text}" if options[:debug]
+        replaced_text.gsub!(/\b#{var}\b/, replacement_text) if options[:replace_vars]
+      end
+
+      # Replace the variable labels...
+      labels.each_pair do |var, val|
+        replacement_text = val
+        puts "Would replace #{var} with #{replacement_text}" if options[:debug]
+        replaced_text.gsub!(/\b#{var}\b/, replacement_text) if options[:replace_vars]
+      end
       replaced_text
     end
 
     protected
 
-    attr_writer :vars
+    attr_writer :_
     attr_accessor :text
 
     def append(text)
       text = text.strip
       self.text = self.text.empty? ? text : "#{self.text} #{text}"
+    end
+
+    def append_raw(text)
+      self.text = self.text.empty? ? text : "#{self.text}#{text}"
     end
 
     def apply(option, text)

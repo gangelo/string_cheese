@@ -3,7 +3,12 @@ RSpec.describe StringCheese do
     expect(described_class::VERSION).not_to be nil
   end
 
-  let(:vars) { { var_1: 1, var_2: 2 } }
+  let(:vars) {
+    {
+    var_1: 1,
+    var_2: 2
+    }
+  }
   let(:options) { {} }
   let(:engine) { described_class.create(vars, options) }
 
