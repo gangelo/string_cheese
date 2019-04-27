@@ -1,19 +1,20 @@
 RSpec.describe StringCheese::Labels do
-  describe '.var_label?' do
+
+  describe '.label?' do
     context 'when a label' do
       it 'returns true' do
-        expect(StringCheese.send(:label?, :good_label)).to be(true)
+        expect(described_class.send(:label?, :good_label)).to be(true)
       end
     end
 
     context 'when not a label' do
       it 'returns false' do
-        expect(StringCheese.send(:label?, :not_a_label_x)).to be(false)
+        expect(described_class.send(:label?, :not_a_label_x)).to be(false)
       end
     end
   end
 
-  describe '.var_label_exists?' do
+  describe '.label_exists?' do
     let(:vars) {
       { var_1: 1,
         var_2: 2 }
@@ -32,7 +33,7 @@ RSpec.describe StringCheese::Labels do
     end
   end
 
-  describe '.var_label_for' do
+  describe '.label_for' do
     context 'when var is not a label' do
       it 'returns the label' do
         expect(described_class.send(:label_for, :var)).to eq(:var_label)
@@ -46,14 +47,14 @@ RSpec.describe StringCheese::Labels do
     end
   end
 
-  describe '.var_labels' do
+  describe '.labels' do
     let(:var_vars) {
       {
       var_1: 1,
       var_2: 2
       }
     }
-    let(:var_labels) {
+    let(:labels) {
       {
       var_1_label: :var_1,
       var_2_label: :var_2
@@ -61,10 +62,10 @@ RSpec.describe StringCheese::Labels do
     }
 
     context 'when passed vars with labels' do
-      let(:vars) { var_vars.merge(var_labels) }
+      let(:vars) { var_vars.merge(labels) }
 
       it 'returns the labels' do
-        expect(described_class.send(:labels, vars)).to eq(var_labels)
+        expect(described_class.send(:labels, vars)).to eq(labels)
       end
     end
 
@@ -77,7 +78,7 @@ RSpec.describe StringCheese::Labels do
     end
   end
 
-  describe '.var_labels_create' do
+  describe '.labels_create' do
     let(:vars) {
       {
       var_1: 1,
@@ -96,7 +97,7 @@ RSpec.describe StringCheese::Labels do
     end
   end
 
-  describe '.var_labels_merge' do
+  describe '.labels_merge' do
     let(:vars) {
       {
       var_1: 1,
@@ -104,7 +105,7 @@ RSpec.describe StringCheese::Labels do
       var_2: 2
       }
     }
-    let(:var_labels) { StringCheese.send(:labels_create, vars) }
+    let(:labels) { described_class.send(:labels_create, vars) }
     let(:expected_vars) {
       {
       var_1: 1,
@@ -115,7 +116,7 @@ RSpec.describe StringCheese::Labels do
     }
 
     it 'returns the labels' do
-      expect(StringCheese.send(:labels_merge, vars, var_labels)).to eq(expected_vars)
+      expect(described_class.send(:labels_merge, vars, labels)).to eq(expected_vars)
     end
   end
 end

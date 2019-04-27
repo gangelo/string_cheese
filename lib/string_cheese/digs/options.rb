@@ -12,6 +12,10 @@ module StringCheese
       def linter?
         fetch(:linter, false)
       end
+
+      def replace_vars?
+        fetch(:replace_vars, true)
+      end
     end
   end
 end

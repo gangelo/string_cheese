@@ -39,16 +39,21 @@ module StringCheese
         super
         return
       end
-      if vars.respond_to?(method)
-        # If the method is an attr_writer, update the value in vars; otherwise,
-        # return the method name; this is later replaced when to_s is called.
-        if attr_writer?(method)
-          vars.send(method, *args, &block)
-        else
-          append(apply(:nop, method.to_s))
-        end
-      elsif attr_writer?(method)
-        vars.send(method, *args, &block)
+
+      if data.labels.has_key?(method)
+        append(apply(:nop, method.to_s))
+        return self
+      end
+
+      if data.vars.has_key?(method)
+        append(apply(:nop, method.to_s))
+        return self
+      end
+
+      if attr_writer?(method)
+        method = ensure_attr_reader(method)
+        target = label?(method) ? data.label : data.vars
+        target[method] = args[0]
       else
         raise ArgumentError, wrong_number_of_arguments_error(method, args.count, 1) unless args.empty? || args.count == 1
         option = args.any? ? args[0].to_sym : :nop
@@ -68,23 +73,27 @@ module StringCheese
         data.labels.has_key?(symbol)
     end
 
-    def to_s(options = { replace_vars: true, debug: false })
+    def to_s(options = {})
+      options = extend_options(ensure_options_with(data.options, options))
       replaced_text = text
-      vars = Vars.vars(vars.to_h)
-      labels = Varlabels.labels(vars.to_h)
+      vars = data.vars
+      labels = data.labels
+
+      puts options if options.debug?
+      puts replaced_text if options.debug?
 
       # Replace the vars...
       vars.each_pair do |var, val|
         replacement_text = "[#{val}]"
-        puts "Would replace #{var} with #{replacement_text}" if options[:debug]
-        replaced_text.gsub!(/\b#{var}\b/, replacement_text) if options[:replace_vars]
+        puts "Would replace #{var} with #{replacement_text}" if options.debug?
+        replaced_text.gsub!(/\b#{var}\b/, replacement_text) if options.replace_vars?
       end
 
       # Replace the variable labels...
       labels.each_pair do |var, val|
-        replacement_text = val
-        puts "Would replace #{var} with #{replacement_text}" if options[:debug]
-        replaced_text.gsub!(/\b#{var}\b/, replacement_text) if options[:replace_vars]
+        replacement_text = val.to_s
+        puts "Would replace #{var} with #{replacement_text}" if options.debug?
+        replaced_text.gsub!(/\b#{var}\b/, replacement_text) if options.replace_vars?
       end
       replaced_text
     end
@@ -105,12 +114,18 @@ module StringCheese
 
     def apply(option, text)
       return text if option == :nop
-      # TODO: Check against whitelist
+      # TODO: Check against whitelist?
       text.send(option)
     end
 
+    # TODO: Make this regex confirm to ruby allowable method names
     def attr_writer?(method)
-      /[a-zA-Z](=)$/ === method
+      /[a-zA-Z0-9](=)$/ === method
+    end
+
+    def ensure_attr_reader(method)
+      method = method.to_s
+      :"#{method.gsub!(/=$/, '')}"
     end
 
     def wrong_number_of_arguments_error(method, actual_count, expected_count)

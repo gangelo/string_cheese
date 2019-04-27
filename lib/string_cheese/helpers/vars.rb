@@ -10,6 +10,7 @@ module StringCheese
       end
 
       def extend_vars(vars)
+        vars = ensure_vars(vars)
         return vars if vars.is_a?(Digs::Vars)
         vars.extend(Digs::Vars)
       end
