@@ -2,14 +2,14 @@ RSpec.describe StringCheese::Digs::Vars do
   let(:vars) { var_vars.merge(var_labels).extend(described_class) }
   let(:var_labels) { {} }
 
-  context 'remove_and_return_labels' do
+  context 'extract_labels!' do
     context 'when passed only vars' do
       context 'with the default label option' do
         let(:var_vars) { { var_1: 1, var_2: 2, var_3: 3 } }
         let(:expected_labels) { { var_1_label: :var_1, var_2_label: :var_2, var_3_label: :var_3 } }
 
         it 'returns the vars and auto-generated labels' do
-          expect(vars.remove_and_return_labels).to eq([var_vars, expected_labels])
+          expect(vars.extract_labels!).to eq([var_vars, expected_labels])
         end
       end
 
@@ -18,7 +18,7 @@ RSpec.describe StringCheese::Digs::Vars do
         let(:var_labels) { { var_1_label: :var_1, var_2_label: :var_2, var_3_label: :var_3 } }
 
         it 'returns the vars and auto-created labels' do
-          expect(vars.remove_and_return_labels(labels: true)).to eq([var_vars, var_labels])
+          expect(vars.extract_labels!(labels: true)).to eq([var_vars, var_labels])
         end
       end
     end
@@ -30,7 +30,7 @@ RSpec.describe StringCheese::Digs::Vars do
         let(:var_labels) { { var_1_label: :var_1, var_2_label: :var_2, var_3_label: :var_3 } }
 
         it 'returns the correct vars and labels' do
-          expect(vars.remove_and_return_labels).to eq([var_vars, var_labels])
+          expect(vars.extract_labels!).to eq([var_vars, var_labels])
         end
       end
 
@@ -38,7 +38,7 @@ RSpec.describe StringCheese::Digs::Vars do
         let(:var_labels) { { var_2_label: :var_2 } }
 
         it 'returns the correct vars and labels' do
-          expect(vars.remove_and_return_labels(labels: false)).to eq([var_vars, var_labels])
+          expect(vars.extract_labels!(labels: false)).to eq([var_vars, var_labels])
         end
       end
     end
@@ -51,7 +51,7 @@ RSpec.describe StringCheese::Digs::Vars do
         let(:expected_labels) { { var_1_label: :var_1, var_2_label: 'Var 2 Label', var_3_label: :var_3 } }
 
         it 'returns the vars and preserves the custom labels' do
-          expect(vars.remove_and_return_labels(labels: true)).to eq([var_vars, expected_labels])
+          expect(vars.extract_labels!(labels: true)).to eq([var_vars, expected_labels])
         end
       end
 
@@ -59,7 +59,7 @@ RSpec.describe StringCheese::Digs::Vars do
         let(:var_labels) { { var_2_label: 'Var 2 Label' } }
 
         it 'returns the vars and preserves the custom labels' do
-          expect(vars.remove_and_return_labels(labels: false)).to eq([var_vars, var_labels])
+          expect(vars.extract_labels!(labels: false)).to eq([var_vars, var_labels])
         end
       end
     end

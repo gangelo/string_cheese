@@ -1,5 +1,5 @@
 RSpec.describe StringCheese::Vars do
-  describe '.remove_and_return_labels' do
+  describe '.extract_labels' do
     context 'when vars and lables are passed' do
       let(:var_vars) {
         {
@@ -16,7 +16,7 @@ RSpec.describe StringCheese::Vars do
       let(:vars) { var_vars.merge(var_labels) }
 
       it 'returns the correct vars and labels' do
-        expect(described_class.send(:remove_and_return_labels, vars)).to eq([var_vars, var_labels])
+        expect(described_class.send(:extract_labels, vars)).to eq([var_vars, var_labels])
       end
     end
   end

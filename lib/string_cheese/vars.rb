@@ -17,7 +17,7 @@ module StringCheese
     # will have one automatically created. If the
     # labels option is false, only labels currently
     # in the vars Hash will be used.
-    def remove_and_return_labels(vars, options = { labels: true })
+    def extract_labels(vars, options = { labels: true })
       Options.extend_options(options)
       labels = vars.dup.each_pair.each_with_object({}) do |key_value_pair, hash|
                  key, value = key_value_pair

@@ -9,7 +9,7 @@ RSpec.describe StringCheese do
     var_2: 2
     }
   }
-  let(:options) { {} }
+  let(:options) { { labels: true } }
   let(:engine) { described_class.create(vars, options) }
 
   describe '.create' do
@@ -25,18 +25,35 @@ RSpec.describe StringCheese do
     end
   end
 
-  describe '.create_engine' do
-    let(:create_engine) { described_class.send(:create_engine, vars, options) }
+  describe '.create_with_debug' do
+    let(:engine) { described_class.send(:create_with_debug, vars, options) }
 
-    it 'creates the engine' do
-      expect(create_engine).to be_kind_of(StringCheese::Engine)
+    it 'creates an engine with debug enabled' do
+      expect(engine.data.options.debug?).to eq(true)
     end
+  end
 
-    it 'creates the engine with the right vars' do
-      expect(create_engine).to respond_to(:var_1)
-      expect(create_engine).to respond_to(:var_2)
-      expect(create_engine).to_not respond_to(:var_1_label)
-      expect(create_engine).to_not respond_to(:var_2_label)
+  describe '.create_with_linter' do
+    let(:engine) { described_class.send(:create_with_linter, vars, options) }
+
+    it 'creates an engine with linter enabled' do
+      expect(engine.data.options.linter?).to eq(true)
+    end
+  end
+
+  describe '.create_with_linter' do
+    let(:engine) { described_class.send(:create_with_linter, vars, options) }
+
+    context 'when calling a method that is missing' do
+      it 'raises the super NoMethodError' do
+        expect { engine.bad_call }.to raise_error(NoMethodError, /undefined method `bad_call'/)
+      end
+
+      skip 'does not raise the string_cheese NoMethodError' do
+        expect { engine.bad_call }.to raise_error(NoMethodError)
+        RSpec::Expectations.configuration.on_potential_false_positives = :nothing
+        expect { engine.bad_call }.to_not raise_error(NoMethodError, /from string_cheese'/)
+      end
     end
   end
 end

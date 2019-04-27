@@ -1,8 +1,6 @@
 require 'ostruct'
-require 'string_cheese/digs/options'
-require 'string_cheese/digs/options'
-require 'string_cheese/digs/labels'
-require 'string_cheese/digs/vars'
+require 'string_cheese/digs'
+require 'string_cheese/helpers'
 require 'string_cheese/labels'
 require 'string_cheese/vars'
 
@@ -10,31 +8,21 @@ module StringCheese
   class Engine
     include StringCheese::Vars
     include StringCheese::Labels
+    include StringCheese::Helpers::Labels
+    include StringCheese::Helpers::Options
+    include StringCheese::Helpers::Vars
 
-    attr_reader :_
+    attr_reader :data
 
     def initialize(vars, options = {})
-      self._ = OpenStruct.new({ vars: {}, labels: {}, options: {} })
-      initialize_options(options)
-      initialize_vars(vars)
-      initialize_labels(vars) if _.options.labels?
+      vars = ensure_vars(vars)
+      options = ensure_options_with_defaults(options)
+      self.data = OpenStruct.new({ vars: {}, labels: {}, options: {} })
+      self.data.options = extend_options(options.dup)
+      self.data.vars = extend_vars(vars.dup)
+      _, labels = self.data.vars.extract_labels!(options)
+      self.data.labels = extend_labels(labels)
       clear
-    end
-
-    def initialize_options(options)
-      _.options = options.dup
-      _.options.extend(Digs::Options)
-    end
-
-    def initialize_vars(vars)
-      _.vars = vars.dup
-      _.vars.extend(Digs::Vars)
-    end
-
-    def initialize_labels(vars)
-      _.labels = create_labels(vars.dup)
-      binding.pry
-      _.labels.extend(Digs::Labels)
     end
 
     # Clears the text and initializes it with [text]
@@ -47,6 +35,10 @@ module StringCheese
     # if it is, append the value. If [method] is not
     # an attribute of [vars], append [method] to [text]
     def method_missing(method, *args, &block)
+      if self.data.options.linter?
+        super
+        return
+      end
       if vars.respond_to?(method)
         # If the method is an attr_writer, update the value in vars; otherwise,
         # return the method name; this is later replaced when to_s is called.
@@ -71,18 +63,9 @@ module StringCheese
     end
 
     def respond_to?(symbol)
-      return true if super.respond_to?(symbol)
-      vars.respond_to?(symbol)
-    end
-
-    def _to_s(options = { replace_vars: true, debug: false })
-      replaced_text = text
-      vars.each_pair do |var, val|
-        replacement_text = Varlabels.label?(var) ? "#{val}" : "[#{val}]"
-        puts "Would replace #{var} with #{replacement_text}" if options[:debug]
-        replaced_text.gsub!(/\b#{var}\b/, replacement_text) if options[:replace_vars]
-      end
-      replaced_text
+      super.respond_to?(symbol) ||
+        data.vars.has_key?(symbol) ||
+        data.labels.has_key?(symbol)
     end
 
     def to_s(options = { replace_vars: true, debug: false })
@@ -108,7 +91,7 @@ module StringCheese
 
     protected
 
-    attr_writer :_
+    attr_writer :data
     attr_accessor :text
 
     def append(text)
@@ -131,7 +114,7 @@ module StringCheese
     end
 
     def wrong_number_of_arguments_error(method, actual_count, expected_count)
-      "wrong number of arguments calling '#{method}' " \
+      "from string_cheese :) wrong number of arguments calling '#{method}' " \
         "(#{actual_count} for #{expected_count})"
     end
   end

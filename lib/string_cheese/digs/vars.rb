@@ -5,8 +5,8 @@ module StringCheese
     module Vars
       extend StringCheese::Vars
 
-      def remove_and_return_labels(options = { labels: true })
-        Vars.send(:remove_and_return_labels, self, options)
+      def extract_labels!(options = { labels: true })
+        Vars.send(:extract_labels, self, options)
       end
     end
   end
