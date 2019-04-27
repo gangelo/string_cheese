@@ -21,13 +21,13 @@ RSpec.describe StringCheese::Engine do
     end
 
     context 'when assigning to a value to a label' do
-      let(:expected_results) { '[1] and [2]' }
+      let(:expected_results) { 'New Var 1 Label and New Var 2 Label' }
 
       it 'returns the correct string' do
-        expect(engine.var_1.and.var_2.to_s).to eq(expected_results)
+        expect(engine.var_1_label.var_1.and.var_2_label.var_2.to_s(debug: true)).to eq('var_1 [1] and var_2 [2]')
         engine.var_1_label = 'New Var 1 Label'
         engine.var_2_label = 'New Var 2 Label'
-        expect(engine.var_1_label.and.var_2_label.to_s(debug: true)).to eq('[1] and [2] New Var 1 Label and New Var 2 Label')
+        expect(engine.var_1_label.and.var_2_label.to_s(debug: true)).to eq('var_1 [1] and var_2 [2] New Var 1 Label and New Var 2 Label')
       end
     end
   end
