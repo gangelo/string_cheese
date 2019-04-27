@@ -7,9 +7,9 @@ module StringCheese
 
     module_function
 
-    def vars(vars)
-      vars.select { |key, _value| !Labels.label?(key) }
-    end
+    #def vars(vars)
+    #  vars.select { |key, _value| !Labels.label?(key) }
+    #end
 
     # Splits up vars and labels into separate Hashes.
     # If the labels option is true (labels: true),

@@ -16,10 +16,6 @@ module StringCheese
       :"#{var}_label"
     end
 
-    def labels(vars)
-      vars.select { |key, _value| label?(key) }
-    end
-
     # Creates labels for the variables
     def labels_create(vars)
       vars.keys.each_with_object({}) do |var, hash|
@@ -28,10 +24,6 @@ module StringCheese
           hash[label] = var
         end
       end
-    end
-
-    def labels_merge(vars, labels)
-      labels.merge(vars)
     end
   end
 end
