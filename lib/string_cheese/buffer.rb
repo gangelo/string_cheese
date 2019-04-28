@@ -34,18 +34,14 @@ module StringCheese
       !any?
     end
 
+    # Returns the buffer as a string. All tokens are suffixed with a space
+    # with the exception of the raw token type which removes any preceeding
+    # single space character before it.
     def to_s
-      results = buffer.map do |token|
-                  case
-                  when token.raw?
-                    "\b#{token.value}"
-                  when token.var?
-                    "[#{token.value}] "
-                  else
-                    "#{token.value} "
-                  end
-                end.join.strip
-      results.gsub(/\s\x08/, '')
+      results = buffer.map.with_index do |token, index|
+        token_value_for(token, index, buffer)
+      end
+      results.join
     end
 
     def update_current_buffer!(vars, labels)
@@ -64,6 +60,25 @@ module StringCheese
 
     def find(token, buffer)
       buffer.select { |buffer_token| buffer_token == token }
+    end
+
+    def next_token(current_token_buffer_index, buffer)
+      next_token_buffer_index = current_token_buffer_index + 1
+      return nil unless next_token_buffer_index < buffer.length
+      buffer[next_token_buffer_index]
+    end
+
+    def previous_token(current_token_buffer_index, buffer)
+      previous_token_buffer_index = current_token_buffer_index - 1
+      return nil if previous_token_buffer_index < 0
+      buffer[previous_token_buffer_index]
+    end
+
+    def token_value_for(token, token_buffer_index, buffer)
+      return token.value(space: :none) if token_buffer_index == 0
+      previous_token = previous_token(token_buffer_index, buffer)
+      return token.value(space: :none) if previous_token.raw?
+      token.raw? ? token.value(space: :none) : token.value(space: :before)
     end
 
     # Sets the buffer index beyond the end of the array.
