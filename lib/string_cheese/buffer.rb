@@ -1,4 +1,4 @@
-require 'string_cheese/token'
+require_relative 'token'
 
 module StringCheese
   class Buffer

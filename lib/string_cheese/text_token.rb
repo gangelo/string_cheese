@@ -1,5 +1,5 @@
-require 'string_cheese/token'
-require 'string_cheese/token_type'
+require_relative 'token'
+require_relative 'token_type'
 
 module StringCheese
   class TextToken < Token

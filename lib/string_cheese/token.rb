@@ -1,4 +1,4 @@
-require 'string_cheese/token_type'
+require_relative 'token_type'
 
 module StringCheese
   class Token

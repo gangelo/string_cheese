@@ -1,7 +1,7 @@
-require 'string_cheese/engine'
-require 'string_cheese/helpers/options'
-require 'string_cheese/helpers/vars'
-require 'string_cheese/version'
+require_relative 'string_cheese/engine'
+require_relative 'string_cheese/helpers/options'
+require_relative 'string_cheese/helpers/vars'
+require_relative 'string_cheese/version'
 
 module StringCheese
   extend Helpers::Options
