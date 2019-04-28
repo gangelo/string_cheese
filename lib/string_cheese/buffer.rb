@@ -35,16 +35,17 @@ module StringCheese
     end
 
     def to_s
-      buffer.map do |token|
-        case
-        when token.raw?
-          token.value
-        when token.var?
-          " [#{token.value}]"
-        else
-          " #{token.value}"
-        end
-      end.join.strip
+      results = buffer.map do |token|
+                  case
+                  when token.raw?
+                    "\b#{token.value}"
+                  when token.var?
+                    "[#{token.value}] "
+                  else
+                    "#{token.value} "
+                  end
+                end.join.strip
+      results.gsub(/\s\x08/, '')
     end
 
     def update_current_buffer!(vars, labels)

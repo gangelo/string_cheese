@@ -16,7 +16,10 @@ RSpec.describe StringCheese::Engine do
         expect(engine.var_1.and.var_2.to_s).to eq(expected_results)
         engine.var_1 = 3
         engine.var_2 = 4
-        expect(engine.var_1.and.var_2.to_s(debug: true)).to eq('[1] and [2] [3] and [4]')
+        expect(engine.raw(', ').var_1.and.var_2.to_s(debug: true)).to eq('[1] and [2], [3] and [4]')
+        engine.var_1 = 5
+        engine.var_2 = 6
+        expect(engine.raw(', ').var_1.and.var_2.to_s(debug: true)).to eq('[1] and [2], [3] and [4], [5] and [6]')
       end
     end
 
@@ -53,7 +56,7 @@ RSpec.describe StringCheese::Engine do
       let(:expected_results) { 'var_1: [1] and var_2: [2]' }
 
       it 'returns the correct string' do
-        expect(engine.var_1_label.raw(':').var_1.and.var_2_label.raw(':').var_2.to_s).to eq(expected_results)
+        expect(engine.var_1_label.raw(': ').var_1.and.var_2_label.raw(': ').var_2.to_s).to eq(expected_results)
       end
     end
   end
