@@ -14,29 +14,46 @@ RSpec.describe StringCheese::Engine do
     end
   end
 
-  describe '<var>=' do
-    context 'when assigning to a value to a var' do
-      let(:expected_results) { '1 and 2' }
+  describe '<label>=' do
+    context 'when assigning to a value to an existing label' do
+      let(:expected_results) { 'New Var 1 Label and New Var 2 Label' }
 
-      it 'returns the correct string' do
-        expect(engine.var_1.and.var_2.to_s).to eq(expected_results)
-        engine.var_1 = 3
-        engine.var_2 = 4
-        expect(engine.raw(', ').var_1.and.var_2.to_s(debug: true)).to eq('1 and 2, 3 and 4')
-        engine.var_1 = 5
-        engine.var_2 = 6
-        expect(engine.raw(', ').var_1.and.var_2.to_s(debug: true)).to eq('1 and 2, 3 and 4, 5 and 6')
+      it 'assigns the value' do
+        engine.var_1_label = 'New Label Value 1'
+        engine.var_2_label = 'New Label Value 2'
+        expect(engine.data.labels[:var_1_label]).to eq('New Label Value 1')
+        expect(engine.data.labels[:var_2_label]).to eq('New Label Value 2')
       end
     end
 
-    context 'when assigning to a value to a label' do
-      let(:expected_results) { 'New Var 1 Label and New Var 2 Label' }
+    context 'when assigning a value to a label that does not exist' do
+      it 'creates a new label and assigns the value' do
+        engine.new_1_label = 'New Label 1'
+        engine.new_2_label = 'New Label 2'
+        expect(engine.data.labels[:new_1_label]).to eq('New Label 1')
+        expect(engine.data.labels[:new_2_label]).to eq('New Label 2')
+      end
+    end
+  end
 
-      it 'returns the correct string' do
-        expect(engine.var_1_label.var_1.and.var_2_label.var_2.to_s(debug: true)).to eq('var_1 1 and var_2 2')
-        engine.var_1_label = 'New Var 1 Label'
-        engine.var_2_label = 'New Var 2 Label'
-        expect(engine.var_1_label.and.var_2_label.to_s(debug: true)).to eq('var_1 1 and var_2 2 New Var 1 Label and New Var 2 Label')
+  describe '<var>=' do
+    context 'when assigning to a value to an existing var' do
+      let(:expected_results) { '1 and 2' }
+
+      it 'assigns the value' do
+        engine.var_1 = 11
+        engine.var_2 = 22
+        expect(engine.data.vars[:var_1]).to eq(11)
+        expect(engine.data.vars[:var_2]).to eq(22)
+      end
+    end
+
+    context 'when assigning a value to a var that does not exist' do
+      it 'creates a new label and assigns the value' do
+        engine.new_var_1 = :new_var_1
+        engine.new_var_2 = :new_var_2
+        expect(engine.data.vars[:new_var_1]).to eq(:new_var_1)
+        expect(engine.data.vars[:new_var_2]).to eq(:new_var_2)
       end
     end
   end
@@ -59,6 +76,14 @@ RSpec.describe StringCheese::Engine do
     end
 
     context 'with labels' do
+      let(:expected_results) { 'var_1 and var_2' }
+
+      it 'returns the correct string' do
+        expect(engine.var_1_label.and.var_2_label.to_s).to eq(expected_results)
+      end
+    end
+
+    context 'with vars and labels' do
       let(:expected_results) { 'var_1: 1 and var_2: 2' }
 
       it 'returns the correct string' do
