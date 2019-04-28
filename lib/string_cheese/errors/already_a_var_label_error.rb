@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module StringCheese
   class AlreadyAVarLabelError < StandardError
     attr_accessor :var

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'token_type'
 
 module StringCheese
@@ -12,7 +14,8 @@ module StringCheese
 
     def ==(token)
       return false if token.nil?
-      self.key == token.key && self.token_type == token.token_type
+
+      key == token.key && token_type == token.token_type
     end
 
     def label?
@@ -53,6 +56,7 @@ module StringCheese
 
     def remove_utf_8_invalid_byte_sequence(string, replace = '<invalid utf-8 sequence>')
       return string if string.nil? || string.empty?
+
       string.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: replace)
     end
   end

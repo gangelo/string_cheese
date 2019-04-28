@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require_relative 'string_cheese/engine'
-require_relative 'string_cheese/helpers/options'
-require_relative 'string_cheese/helpers/vars'
+require_relative 'string_cheese/options'
+require_relative 'string_cheese/vars'
 require_relative 'string_cheese/version'
 
 module StringCheese
-  extend Helpers::Options
-  extend Helpers::Vars
+  extend Options
+  extend Vars
 
   def self.create(vars, options = {})
     create_engine(vars, options)

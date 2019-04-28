@@ -1,4 +1,6 @@
-require_relative '../digs'
+# frozen_string_literal: true
+
+require_relative '../labels'
 
 module StringCheese
   module Helpers
@@ -11,8 +13,9 @@ module StringCheese
 
       def extend_labels(labels)
         labels = ensure_labels(labels)
-        return labels if labels.is_a?(Digs::Labels)
-        labels.extend(Digs::Labels)
+        return labels if labels.is_a?(StringCheese::Labels)
+
+        labels.extend(StringCheese::Labels)
       end
     end
   end

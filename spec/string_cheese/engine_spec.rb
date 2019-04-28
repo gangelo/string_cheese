@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 RSpec.describe StringCheese::Engine do
   let(:engine) { described_class.new(vars, options) }
-  let(:vars) {
+  let(:vars) do
     {
-    var_1: 1,
-    var_2: 2
+      var_1: 1,
+      var_2: 2
     }
-  }
+  end
   let(:options) { {} }
 
   describe 'data' do

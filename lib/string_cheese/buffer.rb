@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'token'
 
 module StringCheese
@@ -10,7 +12,8 @@ module StringCheese
 
     def <<(token)
       raise ArgumentError unless token.is_a?(Token)
-      self.buffer << token
+
+      buffer << token
     end
 
     def any?
@@ -22,7 +25,7 @@ module StringCheese
       update_buffer_index
     end
 
-    alias_method :reset_buffer, :clear_buffer
+    alias reset_buffer clear_buffer
 
     # Returns the portion of the buffer starting at the buffer element
     # pointed to by #buffer_index
@@ -47,6 +50,7 @@ module StringCheese
     def update_current_buffer!(vars, labels)
       current_buffer.each do |token|
         next unless token.var? || token.label?
+
         token.var? ? update_var(token, current_buffer, vars) : update_label(token, current_buffer, labels)
       end
       update_buffer_index
@@ -65,25 +69,29 @@ module StringCheese
     def next_token(current_token_buffer_index, buffer)
       next_token_buffer_index = current_token_buffer_index + 1
       return nil unless next_token_buffer_index < buffer.length
+
       buffer[next_token_buffer_index]
     end
 
     def previous_token(current_token_buffer_index, buffer)
       previous_token_buffer_index = current_token_buffer_index - 1
       return nil if previous_token_buffer_index < 0
+
       buffer[previous_token_buffer_index]
     end
 
     def token_value_for(token, token_buffer_index, buffer)
       return token.value(space: :none) if token_buffer_index == 0
+
       previous_token = previous_token(token_buffer_index, buffer)
       return token.value(space: :none) if previous_token.raw?
+
       token.raw? ? token.value(space: :none) : token.value(space: :before)
     end
 
     # Sets the buffer index beyond the end of the array.
     def update_buffer_index
-      self.buffer_index =  buffer.length
+      self.buffer_index = buffer.length
     end
 
     def update_label(token, buffer, labels)
@@ -99,5 +107,3 @@ module StringCheese
     end
   end
 end
-
-

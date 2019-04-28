@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 RSpec.describe StringCheese do
-  it "has a version number" do
+  it 'has a version number' do
     expect(described_class::VERSION).not_to be nil
   end
 
-  let(:vars) {
+  let(:vars) do
     {
-    var_1: 1,
-    var_2: 2
+      var_1: 1,
+      var_2: 2
     }
-  }
+  end
   let(:options) { { labels: true } }
   let(:engine) { described_class.create(vars, options) }
 

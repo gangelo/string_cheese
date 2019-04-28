@@ -1,13 +1,14 @@
+# frozen_string_literal: true
+
 require 'ostruct'
 require_relative 'buffer'
-require_relative 'digs'
-require_relative 'helpers'
+require_relative 'helpers/labels'
+require_relative 'options'
 require_relative 'label_token'
+require_relative 'labels'
 require_relative 'raw_token'
 require_relative 'text_token'
 require_relative 'var_token'
-require_relative 'token_type'
-require_relative 'labels'
 require_relative 'vars'
 
 module StringCheese
@@ -15,36 +16,35 @@ module StringCheese
     include StringCheese::Vars
     include StringCheese::Labels
     include StringCheese::Helpers::Labels
-    include StringCheese::Helpers::Options
-    include StringCheese::Helpers::Vars
+    include StringCheese::Options
 
     attr_reader :data
 
     def initialize(vars, options = {})
       vars = ensure_vars(vars)
       options = ensure_options_with_defaults(options)
-      self.data = OpenStruct.new({ buffer: Buffer.new, vars: {}, labels: {}, options: {} })
-      self.data.options = extend_options(options.dup)
-      self.data.vars = extend_vars(vars.dup)
-      _, labels = self.data.vars.extract_labels!(options)
-      self.data.labels = extend_labels(labels)
+      self.data = OpenStruct.new(buffer: Buffer.new, vars: {}, labels: {}, options: {})
+      data.options = extend_options(options.dup)
+      data.vars = extend_vars(vars.dup)
+      _, labels = data.vars.extract_labels!(options)
+      data.labels = extend_labels(labels)
     end
 
     # Check to see if [method] is an attribute of [vars];
     # if it is, append the value. If [method] is not
     # an attribute of [vars], append [method] to [text]
     def method_missing(method, *args, &block)
-      if self.data.options.linter?
+      if data.options.linter?
         super
         return
       end
 
-      if data.labels.has_key?(method)
+      if data.labels.key?(method)
         data.buffer << LabelToken.new(method, apply(:nop, method.to_s))
         return self
       end
 
-      if data.vars.has_key?(method)
+      if data.vars.key?(method)
         data.buffer << VarToken.new(method, apply(:nop, method.to_s))
         return self
       end
@@ -55,8 +55,9 @@ module StringCheese
         target[method] = args[0]
       else
         raise ArgumentError, wrong_number_of_arguments_error(method, args.count, 1) unless args.empty? || args.count == 1
+
         option = args.any? ? args[0].to_sym : :nop
-        data.buffer << TextToken.new(apply(option, method.to_s.gsub('_', ' ')))
+        data.buffer << TextToken.new(apply(option, method.to_s.tr('_', ' ')))
       end
       self
     end
@@ -68,12 +69,13 @@ module StringCheese
 
     def respond_to?(symbol)
       super.respond_to?(symbol) ||
-        data.vars.has_key?(symbol) ||
-        data.labels.has_key?(symbol)
+        data.vars.key?(symbol) ||
+        data.labels.key?(symbol)
     end
 
     def to_s(options = {})
       return '' if data.buffer.empty?
+
       options = extend_options(ensure_options_with(data.options, options))
       data.buffer.update_current_buffer!(data.vars, data.labels)
       data.buffer.to_s
@@ -86,6 +88,7 @@ module StringCheese
 
     def apply(option, text)
       return text if option == :nop
+
       # TODO: Check against whitelist?
       text.send(option)
     end

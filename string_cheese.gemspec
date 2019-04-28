@@ -1,18 +1,19 @@
+# frozen_string_literal: true
 
-lib = File.expand_path("../lib", __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "string_cheese/version"
+require 'string_cheese/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "string_cheese"
+  spec.name          = 'string_cheese'
   spec.version       = StringCheese::VERSION
-  spec.authors       = ["Gene M. Angelo, Jr."]
-  spec.email         = ["public.gma@gmail.com"]
+  spec.authors       = ['Gene M. Angelo, Jr.']
+  spec.email         = ['public.gma@gmail.com']
 
-  spec.summary       = %q{Create dynamic strings using dsl.}
+  spec.summary       = 'Create dynamic strings using dsl.'
   # spec.description   = %q{TODO}
-  spec.homepage      = "https://github.com/gangelo/string_cheese"
-  spec.license       = "MIT"
+  spec.homepage      = 'https://github.com/gangelo/string_cheese'
+  spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
@@ -26,20 +27,20 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
   end
-  spec.bindir        = "exe"
+  spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
-  spec.add_development_dependency "bundler", "~> 1.16"
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency 'bundler', '~> 1.16'
+  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'rspec', '~> 3.0'
 
-  spec.add_development_dependency "pry-byebug", "~> 3.7"
-  spec.add_development_dependency "rubocop"
+  spec.add_development_dependency 'pry-byebug', '~> 3.7'
+  spec.add_development_dependency 'rubocop'
 
-  spec.add_development_dependency "yard"
-  spec.add_development_dependency "rdoc"
-  spec.add_development_dependency "colorize"
+  spec.add_development_dependency 'colorize'
+  spec.add_development_dependency 'rdoc'
+  spec.add_development_dependency 'yard'
 
   spec.required_ruby_version = '>= 2.2.2'
 end

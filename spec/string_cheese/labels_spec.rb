@@ -1,5 +1,6 @@
-RSpec.describe StringCheese::Labels do
+# frozen_string_literal: true
 
+RSpec.describe StringCheese::Labels do
   describe '.label?' do
     context 'when a label' do
       it 'returns true' do
@@ -15,10 +16,10 @@ RSpec.describe StringCheese::Labels do
   end
 
   describe '.label_exists?' do
-    let(:vars) {
+    let(:vars) do
       { var_1: 1,
         var_2: 2 }
-    }
+    end
 
     context 'when the label does not exist' do
       it 'returns false' do
@@ -48,33 +49,33 @@ RSpec.describe StringCheese::Labels do
   end
 
   describe '.labels' do
-    let(:var_vars) {
+    let(:var_vars) do
       {
-      var_1: 1,
-      var_2: 2
+        var_1: 1,
+        var_2: 2
       }
-    }
-    let(:labels) {
+    end
+    let(:labels) do
       {
-      var_1_label: :var_1,
-      var_2_label: :var_2
+        var_1_label: :var_1,
+        var_2_label: :var_2
       }
-    }
+    end
   end
 
   describe '.labels_create' do
-    let(:vars) {
+    let(:vars) do
       {
-      var_1: 1,
-      var_2: 2
+        var_1: 1,
+        var_2: 2
       }
-    }
-    let(:expected_vars) {
+    end
+    let(:expected_vars) do
       {
-      var_1_label: :var_1,
-      var_2_label: :var_2
+        var_1_label: :var_1,
+        var_2_label: :var_2
       }
-    }
+    end
 
     it 'returns the labels' do
       expect(described_class.send(:labels_create, vars)).to eq(expected_vars)
