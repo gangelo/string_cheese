@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'ostruct'
-require_relative 'buffer'
+require_relative 'token_buffer_manager'
 require_relative 'errors/invalid_token_option_error'
 require_relative 'helpers/labels'
 require_relative 'options'
@@ -24,7 +24,7 @@ module StringCheese
     def initialize(vars, options = {})
       vars = ensure_vars(vars)
       options = ensure_options_with_defaults(options)
-      self.data = OpenStruct.new(buffer: Buffer.new, vars: {}, labels: {}, options: {})
+      self.data = OpenStruct.new(buffer: TokenBufferManager.new, vars: {}, labels: {}, options: {})
       data.options = extend_options(options.dup)
       data.vars = extend_vars(vars.dup)
       _, labels = data.vars.extract_labels!(options)

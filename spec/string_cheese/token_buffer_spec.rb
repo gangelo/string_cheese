@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe StringCheese::Buffer do
+RSpec.describe StringCheese::TokenBuffer do
   TextToken = StringCheese::TextToken
 
   let(:buffer) { described_class.new }
@@ -41,29 +41,7 @@ RSpec.describe StringCheese::Buffer do
       end
     end
 
-    describe 'current_buffer' do
-      context 'when the buffer is empty' do
-        it 'returns an empty Array' do
-          expect(buffer.current_buffer).to eq([])
-        end
-      end
-
-      context 'when the buffer is not empty' do
-        let(:token2) { TextToken.new('token2') }
-        let(:token3) { TextToken.new('token3') }
-        let(:token4) { TextToken.new('token4') }
-
-        it 'returns the current_buffer' do
-          buffer << token
-          buffer << token2
-          buffer << token3
-          buffer << token4
-          expect(buffer.current_buffer).to eq([token, token2, token3, token4])
-        end
-      end
-    end
-
-    describe 'update_current!' do
+    describe 'update!' do
       context 'when updating the current buffer' do
         let(:var_1) { StringCheese::VarToken.new(:var_1, 1) }
         let(:var_2) { StringCheese::VarToken.new(:var_2, 2) }
@@ -77,20 +55,20 @@ RSpec.describe StringCheese::Buffer do
         let(:update_vars) { var_1.to_h.merge(var_2.to_h) }
         let(:update_labels) { var_1_label.to_h.merge(var_2_label.to_h) }
 
-        it 'updates the current buffer' do
+        it 'updates the buffer' do
           buffer << var_1
           buffer << var_2
           buffer << var_1_label
           buffer << var_2_label
-          expect(buffer.current_buffer).to include(var_1, var_2, var_1_label, var_2_label)
-          expect(buffer.current_buffer.map { |t| "#{t.key}#{t.value}"} ==
+          expect(buffer.send(:buffer)).to include(var_1, var_2, var_1_label, var_2_label)
+          expect(buffer.send(:buffer).map { |t| "#{t.key}#{t.value}"} ==
                  vars_and_labels.map { |t| "#{t.key}#{t.value}"}).to eq(true)
           var_1.value = 11
           var_2.value = 22
           var_1_label.value = 'New Var 1 Label'
           var_2_label.value = 'New Var 2 Label'
-          buffer.update_current!(update_vars, update_labels)
-          expect(buffer.current_buffer.map { |t| "#{t.key}#{t.value}"} ==
+          buffer.update!(update_vars, update_labels)
+          expect(buffer.send(:buffer).map { |t| "#{t.key}#{t.value}"} ==
                  vars_and_labels.map { |t| "#{t.key}#{t.value}"}).to eq(true)
         end
       end
