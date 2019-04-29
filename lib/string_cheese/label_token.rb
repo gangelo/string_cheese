@@ -5,8 +5,8 @@ require_relative 'token_type'
 
 module StringCheese
   class LabelToken < Token
-    def initialize(key, value)
-      super(key, value, TokenType::LABEL)
+    def initialize(key, value, options = [])
+      super(key, value, TokenType::LABEL, options)
     end
   end
 end

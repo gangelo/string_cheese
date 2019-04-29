@@ -16,6 +16,11 @@ RSpec.describe StringCheese::Engine do
     end
   end
 
+  describe '' do
+    context '' do
+    end
+  end
+
   describe '<label>=' do
     context 'when assigning to a value to an existing label' do
       let(:expected_results) { 'New Var 1 Label and New Var 2 Label' }

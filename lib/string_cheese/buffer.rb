@@ -11,8 +11,7 @@ module StringCheese
     end
 
     def <<(token)
-      raise ArgumentError unless token.is_a?(Token)
-
+      raise ArgumentError, 'Param [token] is not a Token' unless token.is_a?(Token)
       buffer << token
     end
 
@@ -20,6 +19,7 @@ module StringCheese
       buffer.any?
     end
 
+    # Clears the buffer
     def clear_buffer
       self.buffer = []
       update_buffer_index
@@ -30,7 +30,7 @@ module StringCheese
     # Returns the portion of the buffer starting at the buffer element
     # pointed to by #buffer_index
     def current_buffer
-      buffer.slice(buffer_index, buffer.length - buffer_index).clone
+      buffer.slice(buffer_index, buffer.length - buffer_index).clone.freeze
     end
 
     def empty?
@@ -47,14 +47,14 @@ module StringCheese
       results.join
     end
 
-    def update_current_buffer!(vars, labels)
-      current_buffer.each do |token|
-        next unless token.var? || token.label?
+    # Updates all tokens in the buffer with the given vars and labels.
+    def update!(vars, labels)
+      update_buffer(vars, labels, buffer)
+    end
 
-        token.var? ? update_var(token, current_buffer, vars) : update_label(token, current_buffer, labels)
-      end
-      update_buffer_index
-      current_buffer
+    # Updates only the tokens in the current buffer with the given vars and labels.
+    def update_current!(vars, labels)
+      update_buffer(vars, labels, current_buffer)
     end
 
     protected
@@ -87,6 +87,14 @@ module StringCheese
       return token.value(space: :none) if previous_token.raw?
 
       token.raw? ? token.value(space: :none) : token.value(space: :before)
+    end
+
+    def update_buffer(vars, labels, buffer)
+      buffer.each do |token|
+        next unless token.var? || token.label?
+        token.var? ? update_var(token, buffer, vars) : update_label(token, buffer, labels)
+      end
+      buffer.clone.freeze
     end
 
     # Sets the buffer index beyond the end of the array.

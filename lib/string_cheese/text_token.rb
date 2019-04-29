@@ -5,8 +5,8 @@ require_relative 'token_type'
 
 module StringCheese
   class TextToken < Token
-    def initialize(value)
-      super(:text, value, TokenType::TEXT)
+    def initialize(value, options = [])
+      super(:text, value, TokenType::TEXT, options)
     end
   end
 end

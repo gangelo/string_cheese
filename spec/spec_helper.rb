@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+$LOAD_PATH << '../../lib'
+
 require 'bundler/setup'
-require 'string_cheese'
 require 'pry'
+require 'string_cheese'
+require 'string_cheese/text_token'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

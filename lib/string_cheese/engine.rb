@@ -2,6 +2,7 @@
 
 require 'ostruct'
 require_relative 'buffer'
+require_relative 'errors/invalid_token_option_error'
 require_relative 'helpers/labels'
 require_relative 'options'
 require_relative 'label_token'
@@ -40,12 +41,12 @@ module StringCheese
       end
 
       if data.labels.key?(method)
-        data.buffer << LabelToken.new(method, apply(:nop, method.to_s))
+        data.buffer << LabelToken.new(method, method.to_s, args)
         return self
       end
 
       if data.vars.key?(method)
-        data.buffer << VarToken.new(method, apply(:nop, method.to_s))
+        data.buffer << VarToken.new(method, method.to_s, args)
         return self
       end
 
@@ -67,6 +68,10 @@ module StringCheese
       self
     end
 
+    def reset
+      data.buffer.reset_buffer
+    end
+
     def respond_to?(symbol)
       super.respond_to?(symbol) ||
         data.vars.key?(symbol) ||
@@ -77,7 +82,7 @@ module StringCheese
       return '' if data.buffer.empty?
 
       options = extend_options(ensure_options_with(data.options, options))
-      data.buffer.update_current_buffer!(data.vars, data.labels)
+      data.buffer.update_current!(data.vars, data.labels)
       data.buffer.to_s
     end
 
@@ -88,7 +93,7 @@ module StringCheese
 
     def apply(option, text)
       return text if option == :nop
-
+      raise InvalidTokeOptionError(option, text) unless text.respond_to?(option)
       # TODO: Check against whitelist?
       text.send(option)
     end
