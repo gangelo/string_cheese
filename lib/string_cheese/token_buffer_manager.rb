@@ -76,18 +76,6 @@ module StringCheese
       buffer.select { |buffer_token| buffer_token == token }
     end
 
-    # def next_token(current_token_buffer_index, buffer)
-    #   next_token_buffer_index = current_token_buffer_index + 1
-    #   return nil unless next_token_buffer_index < buffer.length
-    #   buffer[next_token_buffer_index]
-    # end
-
-    # def previous_token(current_token_buffer_index, buffer)
-    #   previous_token_buffer_index = current_token_buffer_index - 1
-    #   return nil if previous_token_buffer_index < 0
-    #   buffer[previous_token_buffer_index]
-    # end
-
     def previous_token(buffer_index, token_index)
       previous_buffer_indicies(buffer_index, token_index) do |prev_buffer_index, prev_token_index|
         return buffer[prev_buffer_index][prev_token_index]
