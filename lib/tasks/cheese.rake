@@ -15,8 +15,7 @@ task :create do
   puts string_cheese
          .Running.StringCheese.version_label(:capitalize).version
          .from_irb.raw('...').to_s.cyan
-binding.pry
   string_cheese.reset
-
-  #exec 'irb  -I lib -r string_cheese.rb'
+  # Run it!
+  exec 'irb  -I lib -r string_cheese.rb'
 end
