@@ -4,7 +4,6 @@ require_relative 'option_digs'
 
 module StringCheese
   module Options
-
     module_function
 
     def default_options

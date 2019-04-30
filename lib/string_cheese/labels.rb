@@ -21,7 +21,9 @@ module StringCheese
     # Creates labels for the variables
     def labels_create(vars)
       vars.keys.each_with_object({}) do |var, hash|
+        # rubocop:disable Lint/AssignmentInCondition
         next unless label = label_for(var)
+        # rubocop:enable Lint/AssignmentInCondition
         next if label_exists?(label, vars)
 
         hash[label] = var

@@ -1,10 +1,12 @@
-require "bundler/gem_tasks"
-require "rspec/core/rake_task"
+# frozen_string_literal: true
+
+require 'bundler/gem_tasks'
+require 'rspec/core/rake_task'
 require 'yard'
 
 RSpec::Core::RakeTask.new(:spec)
 
-task :default => :spec
+task default: :spec
 
 # Yard
 YARD::Rake::YardocTask.new do |t|
@@ -14,4 +16,4 @@ YARD::Rake::YardocTask.new do |t|
 end
 
 # Load our custom rake tasks.
-Gem.find_files("tasks/**/*.rake").each { | path | import path }
+Gem.find_files('tasks/**/*.rake').each { |path| import path }

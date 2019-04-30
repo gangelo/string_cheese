@@ -12,12 +12,14 @@ module StringCheese
 
     def <<(token)
       raise ArgumentError, 'Param [token] is not a Token' unless token.is_a?(Token)
+
       push_token_buffer unless buffer_valid?
       buffer[buffer_index] << token
     end
 
     def any?
       return false unless buffer_valid?
+
       buffer.any?
     end
 
@@ -44,11 +46,11 @@ module StringCheese
     # single space character before it.
     def to_s
       results = buffer.each_with_index do |token_buffer, buffer_index|
-                  results = token_buffer.buffer.map.with_index do |token, token_index|
-                    token_value_for(token, buffer_index, token_index)
-                  end
-                  results.join
-                end
+        results = token_buffer.buffer.map.with_index do |token, token_index|
+          token_value_for(token, buffer_index, token_index)
+        end
+        results.join
+      end
       results.join
     end
 
@@ -77,9 +79,11 @@ module StringCheese
     end
 
     def previous_token(buffer_index, token_index)
+      # rubocop:disable Metrics/LineLength
       previous_buffer_indicies(buffer_index, token_index) do |prev_buffer_index, prev_token_index|
         return buffer[prev_buffer_index][prev_token_index]
       end
+      # rubocop:enable Metrics/LineLength
       nil
     end
 
@@ -87,6 +91,7 @@ module StringCheese
       # Return nil, nil, if we are at the begining of the first buffer; we
       # can't move back any further
       return if buffer_index.zero? && token_index.zero?
+
       # If our prev_token_index is >= zero, we know we can find a previous
       # token within the same buffer; simply return the current buffer_index
       # and the prev_token_index
@@ -98,7 +103,7 @@ module StringCheese
       # the previous token_index would be equal to -1. This means we need to
       # traverse backwards to the prevoius buffer, and send the token_index of
       # the last token in the previous buffer.
-      #binding.pry if buffer_index == 2 && token_index == 0
+      # binding.pry if buffer_index == 2 && token_index == 0
       buffer_index -= 1
       yield buffer_index, buffer[buffer_index].length - 1
     end
@@ -110,16 +115,18 @@ module StringCheese
     end
 
     def token_value_for(token, buffer_index, token_index)
-      return token.value(space: :none) if token_index == 0
+      return token.value(space: :none) if token_index.zero?
+
       previous_token = previous_token(buffer_index, token_index)
-      binding.pry if previous_token.nil?
       return token.value(space: :none) if previous_token.raw?
+
       token.raw? ? token.value(space: :none) : token.value(space: :before)
     end
 
     def update_buffer(vars, labels, buffer)
       buffer.each do |token|
         next unless token.var? || token.label?
+
         token.var? ? update_var(token, buffer, vars) : update_label(token, buffer, labels)
       end
       buffer.clone.freeze

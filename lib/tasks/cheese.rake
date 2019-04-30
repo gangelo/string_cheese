@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rake'
 require 'pry'
 
@@ -8,13 +10,13 @@ task :create do
   require 'string_cheese'
 
   vars = {
-         version: StringCheese::VERSION,
-         }
+    version: StringCheese::VERSION
+  }
   string_cheese = StringCheese.create(vars)
 
   puts string_cheese
-         .Running.StringCheese.version_label(:capitalize).version
-         .from_irb.raw('...').to_s.cyan
+    .Running.StringCheese.version_label(:capitalize).version
+    .from_irb.raw('...').to_s.cyan
   string_cheese.reset
   # Run it!
   exec 'irb  -I lib -r string_cheese.rb'

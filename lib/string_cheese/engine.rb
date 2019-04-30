@@ -81,6 +81,7 @@ module StringCheese
     def to_s(options = {})
       return '' if data.buffer.empty?
 
+      # TODO: implement these options e.g. debug?
       options = extend_options(ensure_options_with(data.options, options))
       data.buffer.update_current!(data.vars, data.labels)
       data.buffer.to_s
@@ -94,6 +95,7 @@ module StringCheese
     def apply(option, text)
       return text if option == :nop
       raise InvalidTokeOptionError(option, text) unless text.respond_to?(option)
+
       # TODO: Check against whitelist?
       text.send(option)
     end

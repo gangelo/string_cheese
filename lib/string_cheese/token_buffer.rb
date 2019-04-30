@@ -10,11 +10,13 @@ module StringCheese
 
     def <<(token)
       raise ArgumentError, 'Param [token] is not a Token' unless token.is_a?(Token)
+
       buffer << token
     end
 
     def [](index)
       return nil unless any?
+
       buffer[index]
     end
 
@@ -22,9 +24,7 @@ module StringCheese
       buffer.any?
     end
 
-    def buffer
-      @buffer
-    end
+    attr_reader :buffer
 
     # Clears the buffer
     def clear_buffer
@@ -69,25 +69,30 @@ module StringCheese
     def next_token(current_token_buffer_index)
       next_token_buffer_index = current_token_buffer_index + 1
       return nil unless next_token_buffer_index < buffer.length
+
       buffer[next_token_buffer_index]
     end
 
     def previous_token(current_token_buffer_index)
       previous_token_buffer_index = current_token_buffer_index - 1
       return nil if previous_token_buffer_index < 0
+
       buffer[previous_token_buffer_index]
     end
 
     def token_value_for(token, token_buffer_index)
       return token.value(space: :none) if token_buffer_index == 0
+
       previous_token = previous_token(token_buffer_index)
       return token.value(space: :none) if previous_token.raw?
+
       token.raw? ? token.value(space: :none) : token.value(space: :before)
     end
 
     def update_buffer(vars, labels)
       buffer.each do |token|
         next unless token.var? || token.label?
+
         token.var? ? update_var(token, vars) : update_label(token, labels)
       end
       buffer.clone.freeze

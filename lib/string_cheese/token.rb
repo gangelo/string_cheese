@@ -15,10 +15,10 @@ module StringCheese
       self.options = options
     end
 
-    def ==(token)
-      return false if token.nil?
+    def ==(other)
+      return false if other.nil?
 
-      key == token.key && token_type == token.token_type
+      key == other.key && token_type == other.token_type
     end
 
     def label?
@@ -40,13 +40,12 @@ module StringCheese
 
     def value(options = { space: :before })
       value = @value
-      if block_given?
-        value = yield value, self.options
-      end
+      value = yield value, self.options if block_given?
       self.options.each do |option|
         next if option == :nop
         # Raise an error if the value does not respond to the option
         raise InvalidTokeOptionError(option, value) unless value.respond_to?(option)
+
         # Execute the option and return whatever result the call produces. Some
         # calls may not produce anything, so make the assignment of the call
         # result to the value conditional. This may not be the desired result;
@@ -80,6 +79,7 @@ module StringCheese
 
     def remove_utf_8_invalid_byte_sequence(string, replace = '<invalid utf-8 sequence>')
       return string if string.nil? || string.empty?
+
       string.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: replace)
     end
   end
