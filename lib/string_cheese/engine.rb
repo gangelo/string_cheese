@@ -73,10 +73,16 @@ module StringCheese
     end
 
     def respond_to?(symbol)
-      super.respond_to?(symbol) ||
-        data.vars.key?(symbol) ||
-        data.labels.key?(symbol)
+      if data.vars.key?(symbol) || data.labels.key?(symbol)
+        return true
+      else
+        super
+      end
     end
+
+    # def respond_to_missing?(method_name, include_private = false)
+    #  method_name.to_s.start_with?('user_') || super
+    # end
 
     def to_s(options = {})
       return '' if data.buffer.empty?
