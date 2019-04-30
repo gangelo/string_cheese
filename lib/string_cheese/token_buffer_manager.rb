@@ -34,7 +34,7 @@ module StringCheese
     # Returns the portion of the buffer starting at the buffer element
     # pointed to by #buffer_index
     def current_buffer
-      buffer_valid? ? buffer[buffer_index].buffer.clone.freeze : []
+      buffer_valid? ? buffer[buffer_index].clone.freeze : []
     end
 
     def empty?
@@ -46,7 +46,7 @@ module StringCheese
     # single space character before it.
     def to_s
       results = buffer.each_with_index do |token_buffer, buffer_index|
-        results = token_buffer.buffer.map.with_index do |token, token_index|
+        results = token_buffer.map.with_index do |token, token_index|
           token_value_for(token, buffer_index, token_index)
         end
         results.join

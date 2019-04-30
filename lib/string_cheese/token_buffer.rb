@@ -7,7 +7,7 @@ module StringCheese
   class TokenBuffer
     attr_reader :buffer
 
-    delegate :[], :any?, :length, to: :buffer
+    delegate :[], :any?, :clone, :length, :map, to: :buffer
 
     def initialize
       reset_buffer
