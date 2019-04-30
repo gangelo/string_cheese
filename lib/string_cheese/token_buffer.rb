@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/module/delegation'
 require_relative 'token'
 
 module StringCheese
   class TokenBuffer
+    attr_reader :buffer
+
+    delegate :[], :any?, :length, to: :buffer
+
     def initialize
       reset_buffer
     end
@@ -14,34 +19,12 @@ module StringCheese
       buffer << token
     end
 
-    def [](index)
-      return nil unless any?
-
-      buffer[index]
-    end
-
-    def any?
-      buffer.any?
-    end
-
-    attr_reader :buffer
-
     # Clears the buffer
     def clear_buffer
       self.buffer = []
     end
 
     alias reset_buffer clear_buffer
-
-    def empty?
-      !any?
-    end
-
-    def length
-      buffer.length
-    end
-
-    alias count length
 
     # Returns the buffer as a string. All tokens are suffixed with a space
     # with the exception of the raw token type which removes any preceeding
