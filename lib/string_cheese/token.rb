@@ -44,7 +44,7 @@ module StringCheese
       self.options.each do |option|
         next if option == :nop
         # Raise an error if the value does not respond to the option
-        raise InvalidTokeOptionError(option, value) unless value.respond_to?(option)
+        raise InvalidTokenOptionError(option, value) unless value.respond_to?(option)
 
         # Execute the option and return whatever result the call produces. Some
         # calls may not produce anything, so make the assignment of the call
