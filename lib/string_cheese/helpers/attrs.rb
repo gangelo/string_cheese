@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module StringCheese
   module Helpers
     module Attrs
-
       module_function
 
       #
@@ -76,11 +77,13 @@ module StringCheese
 
       def to_attr_reader(method)
         return method if attr_reader?(method)
+
         method.to_s[0...-1].to_sym
       end
 
       def to_attr_writer(method)
         return method if attr_writer?(method)
+
         :"#{method}="
       end
 
@@ -108,7 +111,7 @@ module StringCheese
 
       def var_attr_writer?(method)
         method = method.to_s
-         attr_writer?(method) && !label_attr_writer?(method)
+        attr_writer?(method) && !label_attr_writer?(method)
       end
     end
   end

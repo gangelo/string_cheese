@@ -28,7 +28,7 @@ module StringCheese
   # Private class methods
 
   def self.create_engine(vars, options = {})
-    vars = vars || {}
+    vars ||= {}
     options = ensure_options_with_defaults(options)
     Engine.new(vars, options)
   end

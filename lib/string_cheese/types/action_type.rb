@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module StringCheese
   module ActionType
     # The attr was added

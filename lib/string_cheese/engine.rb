@@ -21,10 +21,23 @@ module StringCheese
 
     def initialize(vars, options = {})
       options = ensure_options_with_defaults(options)
-      data_repository.options = extend_options(options)
       self.data_repository = OpenStruct.new(buffer_manager: TokenBufferManager.new,
                                             attr_data: nil,
                                             options: {})
+      data_repository.options = extend_options(options)
+      unless data_repository.options.linter?
+        define_singleton_method(:method_missing) do |method, *args, &block|
+          if attr_writer?(method)
+            define_attr_accessor(method, args[0])
+          else
+            raise ArgumentError, wrong_number_of_arguments_error(method, args.count, 1) unless args.empty? || args.count == 1
+
+            option = args.any? ? args[0].to_sym : :nop
+            data_repository.buffer_manager << TextToken.new(apply(option, method.to_s.tr('_', ' ')))
+          end
+          self
+        end
+      end
       super
     end
 
@@ -44,10 +57,7 @@ module StringCheese
       super
     end
 
-    # Check to see if [method] is an attribute of [vars];
-    # if it is, append the value. If [method] is not
-    # an attribute of [vars], append [method] to [text]
-    def method_missing(method, *args, &block)
+    def _method_missing(method, *args, &block)
       if data_repository.options.linter?
         super
         return
@@ -61,29 +71,6 @@ module StringCheese
         option = args.any? ? args[0].to_sym : :nop
         data_repository.buffer_manager << TextToken.new(apply(option, method.to_s.tr('_', ' ')))
       end
-
-=begin
-      if data_repository.labels.key?(method)
-        data_repository.buffer_manager << LabelToken.new(method, method.to_s, args)
-        return self
-      end
-
-      if data_repository.vars.key?(method)
-        data_repository.buffer_manager << VarToken.new(method, method.to_s, args)
-        return self
-      end
-
-      if attr_writer?(method)
-        method = to_attr_reader(method)
-        target = label?(method) ? data_repository.labels : data_repository.vars
-        target[method] = args[0]
-      else
-        raise ArgumentError, wrong_number_of_arguments_error(method, args.count, 1) unless args.empty? || args.count == 1
-
-        option = args.any? ? args[0].to_sym : :nop
-        data_repository.buffer_manager << TextToken.new(apply(option, method.to_s.tr('_', ' ')))
-      end
-=end
       self
     end
 

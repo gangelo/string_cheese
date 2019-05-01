@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ostruct'
 require_relative 'attr_observer'
 require_relative 'helpers/attrs'
@@ -10,18 +12,19 @@ module StringCheese
     include Helpers::Attrs
     include Helpers::Hash
 
-    def initialize(attrs, options = {})
+    def initialize(attrs, _options = {})
       # Check for #data_repository and #data_repository.attr_data
-      raise "[#{self.class.name}] must define #data_repository" unless self.respond_to?(:data_repository)
-      raise "[#{self.class.name}] must define #data_repository.attr_data" unless data_repository.respond_to?(:data)
+      raise "[#{self.class.name}] must define #data_repository" unless respond_to?(:data_repository)
+      raise "[#{self.class.name}] must define #data_repository.attr_data" unless data_repository.respond_to?(:attr_data)
       raise "[#{self.class.name}] must define callback method #after_attr_reader_action" \
-        unless self.respond_to?(:after_attr_reader_action)
+        unless respond_to?(:after_attr_reader_action)
       raise "[#{self.class.name}] must define callback method #after_attr_writer_action" \
-        unless self.respond_to?(:after_attr_writer_action)
+        unless respond_to?(:after_attr_writer_action)
       raise "[#{self.class.name}] must define callback method #before_attr_reader_action" \
-        unless self.respond_to?(:before_attr_reader_action)
+        unless respond_to?(:before_attr_reader_action)
       raise "[#{self.class.name}] must define callback method #before_attr_writer_action" \
-        unless self.respond_to?(:before_attr_writer_action)
+        unless respond_to?(:before_attr_writer_action)
+
       data_repository.attr_data = OpenStruct.new
       attrs = ensure_hash(attrs)
       var_attrs = select_var_attrs(attrs)
@@ -49,13 +52,14 @@ module StringCheese
       end
     end
 
-    def define_attr_reader(method, value, &block)
+    def define_attr_reader(method, value)
       raise ArgumentError, "Param [method] is not an attr_reader (#{method})" \
         unless attr_reader?(method)
       return if data_repository.attr_data.respond_to?(method)
+
       data_repository.attr_data[method] = value
       before_attr_reader_action(method, ActionType::ATTR_ADD, value)
-      define_singleton_method(method) do |*args|
+      define_singleton_method(method) do |*_args|
         before_attr_reader_action(method, ActionType::ATTR_READ, value)
         value = data_repository.attr_data[method]
         after_attr_reader_action(method, ActionType::ATTR_READ, value)
@@ -63,7 +67,7 @@ module StringCheese
       after_attr_reader_action(method, ActionType::ATTR_ADD, value)
     end
 
-    def define_attr_writer(method, &block)
+    def define_attr_writer(method)
       raise ArgumentError, "Param [method] is not an attr_writer (#{method})" \
         unless attr_writer?(method)
       # Note: the below guard will always return true if an attr_reader
@@ -73,6 +77,7 @@ module StringCheese
       # for respond_to?; rather, check at the class level.
       # return if data_repository.attr_data.respond_to?(method)
       return if respond_to?(method)
+
       before_attr_writer_action(method, ActionType::ATTR_ADD)
       define_singleton_method(method) do |*args|
         method = to_attr_reader(method)
@@ -95,12 +100,12 @@ module StringCheese
     #   notify(method, action_type, *values)
     # end
 
-    #def respond_to?(symbol)
-    #end
+    # def respond_to?(symbol)
+    # end
 
-    #def respond_to_missing?(method, include_private = false)
+    # def respond_to_missing?(method, include_private = false)
     #  data_repository.attr_data.respond_to?(method) || super
-    #end
+    # end
 
     protected :after_attr_reader_action, \
               :after_attr_writer_action, \

@@ -14,24 +14,22 @@ task :create do
     var_2: 2,
     version: StringCheese::VERSION
   }
-=begin
-  string_cheese = StringCheese.create(vars)
-
-  puts string_cheese
-    .Running.StringCheese.version_label(:capitalize).version
-    .from_irb.raw('...').to_s.cyan
-  string_cheese.reset
-  puts string_cheese
-    .Use.raw(': ')
-    .engine.raw(' = ').StringCheese.raw('.').create
-    .raw('(')
-    .raw('{')
-    .var_1_label.raw(': ').var_1
-    .raw(', ')
-    .var_2_label.raw(': ').var_2
-    .raw('}')
-    .raw(')').to_s.cyan
-=end
+  #   string_cheese = StringCheese.create(vars)
+  #
+  #   puts string_cheese
+  #     .Running.StringCheese.version_label(:capitalize).version
+  #     .from_irb.raw('...').to_s.cyan
+  #   string_cheese.reset
+  #   puts string_cheese
+  #     .Use.raw(': ')
+  #     .engine.raw(' = ').StringCheese.raw('.').create
+  #     .raw('(')
+  #     .raw('{')
+  #     .var_1_label.raw(': ').var_1
+  #     .raw(', ')
+  #     .var_2_label.raw(': ').var_2
+  #     .raw('}')
+  #     .raw(')').to_s.cyan
 
   puts 'engine = StringCheese.create({var_1: 1, var_2: 2})'.cyan
   puts "Don't forget to require 'pry'!".red
