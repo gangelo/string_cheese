@@ -14,8 +14,9 @@ task :create do
     var_2: 2,
     version: StringCheese::VERSION
   }
-  string_cheese = StringCheese.create(vars)
 =begin
+  string_cheese = StringCheese.create(vars)
+
   puts string_cheese
     .Running.StringCheese.version_label(:capitalize).version
     .from_irb.raw('...').to_s.cyan

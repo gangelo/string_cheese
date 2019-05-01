@@ -37,22 +37,32 @@ module StringCheese
       data.labels = extend_labels(labels)
     end
 
-    def attr_action(method, value, action_type)
-      puts "Method [#{method}], value [#{value}], action [#{action_type}]"
-      action_type == ActionType::READ ? self : value
+    def attr_reader_action(method, action_type, *values)
+      puts "attr_reader method: :#{method}, action: #{action_type}, values: #{values}"
+      # If the reader value is being read, return self so that we can continue
+      # any chaining that is going on. Any other action, simply return the
+      # value.
+      action_type == ActionType::ATTR_READ ? self : values
+    end
+
+    def attr_writer_action(method, action_type, *values)
+      puts "attr_writer method: :#{method}, action: #{action_type}, values: #{values}"
+      # If the writer value is being written, return the value; otherwise,
+      # return self so that we can continue any chaining that is going on.
+      action_type == ActionType::ATTR_WRITTEN ? value[0] : self
     end
 
     # Check to see if [method] is an attribute of [vars];
     # if it is, append the value. If [method] is not
     # an attribute of [vars], append [method] to [text]
     def method_missing(method, *args, &block)
+      #binding.pry
       if data.options.linter?
         super
         return
       end
 
       if attr_writer?(method)
-        puts "Defining attr_accessor: #{method}"
         define_attr_accessor(method, args[0])
       else
         raise ArgumentError, wrong_number_of_arguments_error(method, args.count, 1) unless args.empty? || args.count == 1
@@ -95,13 +105,14 @@ module StringCheese
       data.buffer.reset_buffer
     end
 
-    def respond_to?(symbol)
-      if data.vars.key?(symbol) || data.labels.key?(symbol)
-        return true
-      else
-        super
-      end
-    end
+    # def respond_to?(symbol)
+    #   if data.vars.key?(symbol) || data.labels.key?(symbol)
+    #     return true
+    #   else
+    #     super
+    #   end
+    #   super
+    # end
 
     # def respond_to_missing?(method_name, include_private = false)
     #  method_name.to_s.start_with?('user_') || super

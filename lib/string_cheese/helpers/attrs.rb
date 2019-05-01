@@ -4,6 +4,9 @@ module StringCheese
 
       module_function
 
+      #
+      # Generic idenification
+
       def attr_reader?(method)
         method = method.to_s
         method =~ /[\w!?=]+[^=]\z/
@@ -14,6 +17,9 @@ module StringCheese
         method =~ /[\w!?=]+[^!?=]={1}\z/
       end
 
+      #
+      # Label identification
+
       def label_attr_reader?(method)
         method = method.to_s
         method =~ /[\w!?=]+_label\z/
@@ -23,6 +29,50 @@ module StringCheese
         method = method.to_s
         method =~ /[\w!?=]+_label=\z/
       end
+
+      #
+      # Selection
+
+      # Use this method to select label attribute keys from the given Hash.
+      #
+      # For example, given the following Hash:
+      #
+      # { var_1: 1, var_2: 2,
+      #   var_1_label: :var_1,
+      #   var_2_label: 'Custom Var 2 Label' }
+      #
+      # The following would be returned:
+      #
+      # { var_1_label: :var_1,
+      #   var_2_label: 'Custom Var 2 Label' }
+      #
+      def select_label_attrs(method_value_pairs)
+        method_value_pairs.each_with_object({}) do |(key, value), hash|
+          hash[key] = value if label_attr_reader?(key)
+        end
+      end
+
+      # Use this method to select var attribute keys from the given Hash.
+      #
+      # For example, given the following Hash:
+      #
+      # { var_1: 1, var_2: 2,
+      #   var_1_label: :var_1,
+      #   var_2_label: 'Custom Var 2 Label' }
+      #
+      # The following would be returned:
+      #
+      # { var_1: 1,
+      #   var_2: 2 }
+      #
+      def select_var_attrs(method_value_pairs)
+        method_value_pairs.each_with_object({}) do |(key, value), hash|
+          hash[key] = value if var_attr_reader?(key)
+        end
+      end
+
+      #
+      # Conversion
 
       def to_attr_reader(method)
         return method if attr_reader?(method)
@@ -47,6 +97,9 @@ module StringCheese
           hash[to_label_attr_reader(key)] = key
         end
       end
+
+      #
+      # Var identification
 
       def var_attr_reader?(method)
         method = method.to_s
