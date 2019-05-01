@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-require 'ostruct'
 require_relative 'token_buffer_manager'
+require_relative 'dynamic_data_repository'
 require_relative 'errors/invalid_token_option_error'
+require_relative 'helpers/attrs'
 require_relative 'helpers/labels'
 require_relative 'options'
+require_relative 'types/action_type'
 require_relative 'label_token'
 require_relative 'labels'
 require_relative 'raw_token'
@@ -14,6 +16,8 @@ require_relative 'vars'
 
 module StringCheese
   class Engine
+    include DynamicDataRepository
+    include Helpers::Attrs
     include StringCheese::Vars
     include StringCheese::Labels
     include StringCheese::Helpers::Labels
@@ -22,13 +26,20 @@ module StringCheese
     attr_reader :data
 
     def initialize(vars, options = {})
-      vars = ensure_vars(vars)
       options = ensure_options_with_defaults(options)
+      super
+      #vars = ensure_vars(vars)
+      #options = ensure_options_with_defaults(options)
       self.data = OpenStruct.new(buffer: TokenBufferManager.new, vars: {}, labels: {}, options: {})
       data.options = extend_options(options.dup)
       data.vars = extend_vars(vars.dup)
       _, labels = data.vars.extract_labels!(options)
       data.labels = extend_labels(labels)
+    end
+
+    def attr_action(method, value, action_type)
+      puts "Method [#{method}], value [#{value}], action [#{action_type}]"
+      action_type == ActionType::READ ? self : value
     end
 
     # Check to see if [method] is an attribute of [vars];
@@ -40,6 +51,17 @@ module StringCheese
         return
       end
 
+      if attr_writer?(method)
+        puts "Defining attr_accessor: #{method}"
+        define_attr_accessor(method, args[0])
+      else
+        raise ArgumentError, wrong_number_of_arguments_error(method, args.count, 1) unless args.empty? || args.count == 1
+
+        option = args.any? ? args[0].to_sym : :nop
+        data.buffer << TextToken.new(apply(option, method.to_s.tr('_', ' ')))
+      end
+
+=begin
       if data.labels.key?(method)
         data.buffer << LabelToken.new(method, method.to_s, args)
         return self
@@ -51,7 +73,7 @@ module StringCheese
       end
 
       if attr_writer?(method)
-        method = ensure_attr_reader(method)
+        method = to_attr_reader(method)
         target = label?(method) ? data.labels : data.vars
         target[method] = args[0]
       else
@@ -60,6 +82,7 @@ module StringCheese
         option = args.any? ? args[0].to_sym : :nop
         data.buffer << TextToken.new(apply(option, method.to_s.tr('_', ' ')))
       end
+=end
       self
     end
 
@@ -100,20 +123,10 @@ module StringCheese
 
     def apply(option, text)
       return text if option == :nop
-      raise InvalidTokeOptionError(option, text) unless text.respond_to?(option)
+      raise InvalidTokenOptionError(option, text) unless text.respond_to?(option)
 
       # TODO: Check against whitelist?
       text.send(option)
-    end
-
-    # TODO: Make this regex confirm to ruby allowable method names
-    def attr_writer?(method)
-      /[a-zA-Z0-9](=)$/ === method
-    end
-
-    def ensure_attr_reader(method)
-      method = method.to_s
-      :"#{method.gsub!(/=$/, '')}"
     end
 
     def wrong_number_of_arguments_error(method, actual_count, expected_count)

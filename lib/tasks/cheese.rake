@@ -15,7 +15,7 @@ task :create do
     version: StringCheese::VERSION
   }
   string_cheese = StringCheese.create(vars)
-
+=begin
   puts string_cheese
     .Running.StringCheese.version_label(:capitalize).version
     .from_irb.raw('...').to_s.cyan
@@ -30,6 +30,10 @@ task :create do
     .var_2_label.raw(': ').var_2
     .raw('}')
     .raw(')').to_s.cyan
+=end
+
+  puts 'engine = StringCheese.create({var_1: 1, var_2: 2})'.cyan
+  puts "Don't forget to require 'pry'!".red
 
   # Run it!
   exec 'irb  -I lib -r string_cheese.rb'

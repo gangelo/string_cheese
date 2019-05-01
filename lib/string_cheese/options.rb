@@ -7,7 +7,7 @@ module StringCheese
     module_function
 
     def default_options
-      { debug: false, labels: true, linter: false }
+      { debug: false, labels: true, label_suffix: '_label', linter: false }
     end
 
     def ensure_options(options)
