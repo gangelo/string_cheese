@@ -11,6 +11,7 @@ module StringCheese
     end
 
     def ensure_options(options)
+      options = options.clone unless options.nil?
       options || {}
     end
 

@@ -93,7 +93,7 @@ module StringCheese
       # This method WILL NOT WORK correctly if anything other than label
       # attr reader keys are passed.
       def to_label_attr_readers(var_attr_method_value_pairs)
-        var_attr_method_value_pairs.each_with_object({}) do |(key, value), hash|
+        var_attr_method_value_pairs.each_with_object({}) do |(key, _value), hash|
           hash[to_label_attr_reader(key)] = key
         end
       end

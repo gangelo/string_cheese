@@ -2,12 +2,10 @@
 
 require_relative 'string_cheese/engine'
 require_relative 'string_cheese/options'
-require_relative 'string_cheese/vars'
 require_relative 'string_cheese/version'
 
 module StringCheese
   extend Options
-  extend Vars
 
   def self.create(vars, options = {})
     create_engine(vars, options)
@@ -30,7 +28,7 @@ module StringCheese
   # Private class methods
 
   def self.create_engine(vars, options = {})
-    vars = ensure_vars(vars)
+    vars = vars || {}
     options = ensure_options_with_defaults(options)
     Engine.new(vars, options)
   end
