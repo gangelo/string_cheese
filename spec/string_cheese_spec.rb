@@ -31,7 +31,7 @@ RSpec.describe StringCheese do
     let(:engine) { described_class.send(:create_with_debug, vars, options) }
 
     it 'creates an engine with debug enabled' do
-      expect(engine.data.options.debug?).to eq(true)
+      expect(engine.data_repository.options.debug?).to eq(true)
     end
   end
 
@@ -39,7 +39,7 @@ RSpec.describe StringCheese do
     let(:engine) { described_class.send(:create_with_linter, vars, options) }
 
     it 'creates an engine with linter enabled' do
-      expect(engine.data.options.linter?).to eq(true)
+      expect(engine.data_repository.options.linter?).to eq(true)
     end
   end
 
