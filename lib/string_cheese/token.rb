@@ -9,6 +9,8 @@ module StringCheese
 
     # Note: options are applied in the order they are given
     def initialize(key, value, token_type, options)
+      raise 'key is not a symbol' unless key.is_a?(Symbol)
+
       self.key = key
       self.value = value
       self.token_type = token_type

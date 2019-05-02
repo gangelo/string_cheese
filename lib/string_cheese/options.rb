@@ -1,9 +1,21 @@
 # frozen_string_literal: true
 
-require_relative 'option_digs'
-
 module StringCheese
   module Options
+    module Digs
+      def debug?
+        fetch(:debug, false)
+      end
+
+      def labels?
+        fetch(:labels, false)
+      end
+
+      def linter?
+        fetch(:linter, false)
+      end
+    end
+
     module_function
 
     def default_options
@@ -27,9 +39,9 @@ module StringCheese
 
     def extend_options(options)
       options = ensure_options(options)
-      return options if options.is_a?(OptionDigs)
+      return options if options.is_a?(Digs)
 
-      options.extend(OptionDigs)
+      options.extend(Digs)
     end
   end
 end

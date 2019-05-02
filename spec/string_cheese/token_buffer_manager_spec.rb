@@ -92,7 +92,7 @@ RSpec.describe StringCheese::TokenBufferManager do
           var_2.value = 22
           var_1_label.value = 'New Var 1 Label'
           var_2_label.value = 'New Var 2 Label'
-          buffer_manager.update_current!(update_vars, update_labels)
+          buffer_manager.update_current!(update_vars.merge(update_labels))
           expect(buffer_manager.current_buffer.map { |t| "#{t.key}#{t.value}"} ==
                  vars_and_labels.map { |t| "#{t.key}#{t.value}"}).to eq(true)
         end

@@ -48,6 +48,10 @@ module StringCheese
       #   var_2_label: 'Custom Var 2 Label' }
       #
       def select_label_attrs(method_value_pairs)
+        raise ArgumentError, 'Param [method_value_pairs] does not respond_to? :to_h' \
+          unless method_value_pairs.respond_to?(:to_h)
+
+        method_value_pairs = method_value_pairs.to_h unless method_value_pairs.is_a?(Hash)
         method_value_pairs.each_with_object({}) do |(key, value), hash|
           hash[key] = value if label_attr_reader?(key)
         end
@@ -67,6 +71,10 @@ module StringCheese
       #   var_2: 2 }
       #
       def select_var_attrs(method_value_pairs)
+        raise ArgumentError, 'Param [method_value_pairs] does not respond_to? :to_h' \
+          unless method_value_pairs.respond_to?(:to_h)
+
+        method_value_pairs = method_value_pairs.to_h unless method_value_pairs.is_a?(Hash)
         method_value_pairs.each_with_object({}) do |(key, value), hash|
           hash[key] = value if var_attr_reader?(key)
         end
@@ -89,7 +97,7 @@ module StringCheese
 
       def to_label_attr_reader(method)
         method = to_attr_reader(method)
-        "#{method}_label"
+        :"#{method}_label"
       end
 
       # Returns a Hash of label attr readers for the given var attr readers.

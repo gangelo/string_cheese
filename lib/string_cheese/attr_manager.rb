@@ -82,23 +82,13 @@ module StringCheese
       define_singleton_method(method) do |*args|
         method = to_attr_reader(method)
         before_attr_writer_action(method, ActionType::ATTR_WRITE, data_repository.attr_data[method])
+        # TODO: Accomodate before ActionType::CHANGE
+        # TODO: Accomodate after ActionType::CHANGE
         value = data_repository.attr_data[method] = args[0]
         after_attr_writer_action(method, ActionType::ATTR_WRITE, value)
       end
       after_attr_writer_action(method, ActionType::ATTR_ADD)
     end
-
-    # def notify_observer_after_action(method, action_type, *values)
-    #   notify = attr_writer?(method) ? self.after_attr_writer_action \
-    #                                 : self.after_attr_reader_action
-    #   notify(method, action_type, *values)
-    # end
-
-    # def notify_observer_before_action(method, action_type, *values)
-    #   notify = attr_writer?(method) ? self.before_attr_writer_action \
-    #                                 : self.before_attr_reader_action
-    #   notify(method, action_type, *values)
-    # end
 
     # def respond_to?(symbol)
     # end

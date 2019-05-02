@@ -26,9 +26,10 @@ module StringCheese
                                             options: {})
       data_repository.options = extend_options(options)
       unless data_repository.options.linter?
-        define_singleton_method(:method_missing) do |method, *args, &block|
+        define_singleton_method(:method_missing) do |method, *args|
           if attr_writer?(method)
             define_attr_accessor(method, args[0])
+            define_attr_accessor(to_label_attr_reader(method), to_attr_reader(method))
           else
             raise ArgumentError, wrong_number_of_arguments_error(method, args.count, 1) unless args.empty? || args.count == 1
 
@@ -42,36 +43,32 @@ module StringCheese
     end
 
     def after_attr_reader_action(method, action_type, *values)
+      if action_type == ActionType::ATTR_READ
+        value = values.pop
+        token = label_attr_reader?(method) ? LabelToken.new(method, value) \
+                                           : VarToken.new(method, value)
+        data_repository.buffer_manager << token
+      end
       super
     end
 
     def after_attr_writer_action(method, action_type, *values)
+      # TODO: Handle AttrType::ATTR_REMOVE || AttrType::ATTR_CHANGE
       super
     end
 
     def before_attr_reader_action(method, action_type, *values)
+      yield true if block_given?
       super
     end
 
     def before_attr_writer_action(method, action_type, *values)
+      yield true if block_given?
       super
     end
 
-    def _method_missing(method, *args, &block)
-      if data_repository.options.linter?
-        super
-        return
-      end
-
-      if attr_writer?(method)
-        define_attr_accessor(method, args[0])
-      else
-        raise ArgumentError, wrong_number_of_arguments_error(method, args.count, 1) unless args.empty? || args.count == 1
-
-        option = args.any? ? args[0].to_sym : :nop
-        data_repository.buffer_manager << TextToken.new(apply(option, method.to_s.tr('_', ' ')))
-      end
-      self
+    def method_to_text(method)
+      method.to_s.tr('_', ' ')
     end
 
     def raw(text)
@@ -101,7 +98,7 @@ module StringCheese
 
       # TODO: implement these options e.g. debug?
       options = extend_options(ensure_options_with(data_repository.options, options))
-      data_repository.buffer_manager.update_current!(data_repository.vars, data_repository.labels)
+      data_repository.buffer_manager.update_current!(data_repository.attr_data)
       data_repository.buffer_manager.to_s
     end
 

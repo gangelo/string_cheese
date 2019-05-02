@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+require_relative 'helpers/attrs'
 require_relative 'token_buffer'
 
 module StringCheese
   class TokenBufferManager
+    include Helpers::Attrs
+
     attr_reader :buffer_index
 
     def initialize
@@ -55,13 +58,15 @@ module StringCheese
     end
 
     # Updates all tokens in the buffer with the given vars and labels.
-    def update!(vars, labels)
+    def update!(attrs)
+      vars, labels = select_vars_and_label_attrs(attrs)
       buffer.each { |buffer| update_buffer(vars, labels, buffer) }
       buffer.clone.freeze
     end
 
     # Updates only the tokens in the current buffer with the given vars and labels.
-    def update_current!(vars, labels)
+    def update_current!(attrs)
+      vars, labels = select_vars_and_label_attrs(attrs)
       update_buffer(vars, labels, current_buffer)
     end
 
@@ -103,7 +108,6 @@ module StringCheese
       # the previous token_index would be equal to -1. This means we need to
       # traverse backwards to the prevoius buffer, and send the token_index of
       # the last token in the previous buffer.
-      # binding.pry if buffer_index == 2 && token_index == 0
       buffer_index -= 1
       yield buffer_index, buffer[buffer_index].length - 1
     end
@@ -112,6 +116,10 @@ module StringCheese
       self.buffer ||= []
       self.buffer << TokenBuffer.new
       update_buffer_index
+    end
+
+    def select_vars_and_label_attrs(attrs)
+      [select_var_attrs(attrs), select_label_attrs(attrs)]
     end
 
     def token_value_for(token, buffer_index, token_index)
