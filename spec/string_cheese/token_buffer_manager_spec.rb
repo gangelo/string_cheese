@@ -7,7 +7,15 @@ RSpec.describe StringCheese::TokenBufferManager do
   VarToken = StringCheese::VarToken
 
   let(:buffer_manager) { described_class.new }
+  let(:token_buffer) { TokenBuffer.new }
   let(:token) { TextToken.new('token') }
+
+  describe 'new' do
+    it 'initializes the buffer and sets the buffer index' do
+      expect(buffer_manager.send(:buffer)).to eq([])
+      expect(buffer_manager.buffer_index).to eq(-1)
+    end
+  end
 
   describe '<<' do
     context 'when a non-token object is pushed' do
@@ -96,6 +104,83 @@ RSpec.describe StringCheese::TokenBufferManager do
           expect(buffer_manager.current_buffer.map { |t| "#{t.key}#{t.value}"} ==
                  vars_and_labels.map { |t| "#{t.key}#{t.value}"}).to eq(true)
         end
+      end
+    end
+  end
+
+  describe 'any?' do
+    context 'when the buffer is empty' do
+      it 'returns false' do
+        expect(buffer_manager.any?).to eq(false)
+      end
+    end
+
+    context 'when the buffer is not empty' do
+      it 'returns true' do
+        buffer_manager << LabelToken.new(:dummy_label, :dummy_var)
+        expect(buffer_manager.any?).to eq(true)
+      end
+    end
+  end
+
+  describe 'clear_buffer' do
+    context 'when the buffer is empty' do
+      it 'clears the buffer' do
+        expect { buffer_manager.clear_buffer }.to_not raise_error
+        expect(buffer_manager.send(:buffer)).to eq([])
+        expect(buffer_manager.buffer_index).to eq(-1)
+      end
+    end
+
+    context 'when the buffer is not empty' do
+      it 'clears the buffer'
+    end
+  end
+
+  describe 'current_buffer' do
+    context 'when the buffer is empty' do
+      it 'returns an empty array' do
+        expect(buffer_manager.current_buffer).to eq([])
+      end
+    end
+
+    context 'when the buffer has one token buffer' do
+      let(:token_buffer) { TextToken.new('dummy') }
+
+      it 'returns the buffer' do
+        token_buffer << token
+        buffer_manager << token_buffer
+        expect(buffer_manager.current_buffer).to eq(token_buffer)
+      end
+    end
+
+    context 'when the buffer has more than one token buffer' do
+      let(:token1) { VarToken.new(:var_1, 1) }
+      let(:token2) { VarToken.new(:var_2, 2) }
+
+      it 'returns the buffer' do
+        # Token buffer 1
+        buffer_manager << token1
+        expect(buffer_manager.current_buffer[0]).to eq(token1)
+        # Token buffer 2
+        buffer_manager.save_buffer # save the buffer
+        buffer_manager << token2
+        expect(buffer_manager.current_buffer[0]).to eq(token2)
+      end
+    end
+  end
+
+  describe 'empty?' do
+    context 'when the buffer is empty' do
+      it 'returns true' do
+        expect(buffer_manager.empty?).to eq(true)
+      end
+    end
+
+    context 'when the buffer is not empty' do
+      it 'returns false' do
+        buffer_manager << LabelToken.new(:dummy_label, :dummy_var)
+        expect(buffer_manager.empty?).to eq(false)
       end
     end
   end

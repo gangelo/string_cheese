@@ -19,7 +19,7 @@ module StringCheese
 
     attr_reader :data_repository
 
-    def initialize(vars, options = {})
+    def initialize(attrs, options = {})
       options = ensure_options_with_defaults(options)
       self.data_repository = OpenStruct.new(buffer_manager: TokenBufferManager.new,
                                             attr_data: nil,
@@ -105,7 +105,6 @@ module StringCheese
     protected
 
     attr_writer :data_repository
-    attr_accessor :text
 
     def apply(option, text)
       return text if option == :nop

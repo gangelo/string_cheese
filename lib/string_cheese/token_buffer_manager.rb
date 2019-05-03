@@ -10,13 +10,13 @@ module StringCheese
     attr_reader :buffer_index
 
     def initialize
-      reset_buffer
+      initialize_buffer
     end
 
     def <<(token)
       raise ArgumentError, 'Param [token] is not a Token' unless token.is_a?(Token)
 
-      push_token_buffer unless buffer_valid?
+      push_buffer unless buffer_valid?
       buffer[buffer_index] << token
     end
 
@@ -32,7 +32,7 @@ module StringCheese
       update_buffer_index
     end
 
-    alias reset_buffer clear_buffer
+    alias initialize_buffer clear_buffer
 
     # Returns the portion of the buffer starting at the buffer element
     # pointed to by #buffer_index
@@ -42,6 +42,11 @@ module StringCheese
 
     def empty?
       !any?
+    end
+
+    # Saves the current buffer and pushes a new TokeBuffer onto the buffer stack
+    def save_buffer
+      push_buffer(TokenBuffer.new)
     end
 
     # Returns the buffer as a string. All tokens are suffixed with a space
@@ -112,9 +117,11 @@ module StringCheese
       yield buffer_index, buffer[buffer_index].length - 1
     end
 
-    def push_token_buffer
+    # Pushes a <token_buffer> or a new TokenBuffer onto the buffer stack if
+    # <token_buffer> is nil. The buffer index is returned.
+    def push_buffer(token_buffer = nil)
       self.buffer ||= []
-      self.buffer << TokenBuffer.new
+      self.buffer << (token_buffer || TokenBuffer.new)
       update_buffer_index
     end
 
