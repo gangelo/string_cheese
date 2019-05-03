@@ -145,12 +145,11 @@ RSpec.describe StringCheese::TokenBufferManager do
     end
 
     context 'when the buffer has one token buffer' do
-      let(:token_buffer) { TextToken.new('dummy') }
+      let(:token) { VarToken.new(:var_1, 1) }
 
       it 'returns the buffer' do
-        token_buffer << token
-        buffer_manager << token_buffer
-        expect(buffer_manager.current_buffer).to eq(token_buffer)
+        buffer_manager << token
+        expect(buffer_manager.current_buffer[0]).to eq(token)
       end
     end
 
@@ -162,10 +161,12 @@ RSpec.describe StringCheese::TokenBufferManager do
         # Token buffer 1
         buffer_manager << token1
         expect(buffer_manager.current_buffer[0]).to eq(token1)
+        expect(buffer_manager.current_buffer.count).to eq(1)
         # Token buffer 2
         buffer_manager.save_buffer # save the buffer
         buffer_manager << token2
         expect(buffer_manager.current_buffer[0]).to eq(token2)
+        expect(buffer_manager.current_buffer.count).to eq(1)
       end
     end
   end
