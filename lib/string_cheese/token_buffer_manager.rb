@@ -7,6 +7,8 @@ module StringCheese
   class TokenBufferManager
     include Helpers::Attrs
 
+    # Returns the buffer, an Array of TokenBuffers
+    attr_reader :buffer
     attr_reader :buffer_index
 
     def initialize
@@ -24,11 +26,6 @@ module StringCheese
       return false unless buffer_valid?
 
       buffer.any?
-    end
-
-    # Returns the buffer, an Array of TokenBuffers
-    def buffer
-      @buffer
     end
 
     # Clears the buffer

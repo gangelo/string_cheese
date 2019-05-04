@@ -9,6 +9,7 @@ module StringCheese
     def initialize(token_buffer_manager, options = {})
       raise ArgumentError, 'Param [token_buffer_manager] cannot be nil' \
         if token_buffer_manager.nil?
+
       self.options = extend_options(ensure_options_with_defaults(options))
       self.token_buffer_manager = token_buffer_manager
     end
@@ -44,6 +45,7 @@ module StringCheese
       return false if buffer_index < 0 || token_index < 0
       return false if buffer.nil? || buffer.empty?
       return false unless buffer_index < buffer.length
+
       token_index < buffer[buffer_index].length
     end
 
