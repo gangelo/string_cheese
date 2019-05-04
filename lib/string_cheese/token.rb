@@ -56,14 +56,14 @@ module StringCheese
         result = value.send(option)
         value = result unless result.nil?
       end
-      value = case options[:space]
-              when :after
-                "#{value} "
-              when :before
-                " #{value}"
-              else
-                value
-              end
+      case options[:space]
+      when :after
+        "#{value} "
+      when :before
+        " #{value}"
+      else
+        value
+      end
     end
 
     def value=(value)

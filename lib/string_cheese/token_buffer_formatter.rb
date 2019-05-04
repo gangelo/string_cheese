@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
+require_relative 'options'
+
 module StringCheese
   class TokenBufferFormatter
-    def initialize(token_buffer_manager)
+    include Options
+
+    def initialize(token_buffer_manager, options = {})
       raise ArgumentError, 'Param [token_buffer_manager] cannot be nil' \
         if token_buffer_manager.nil?
+      self.options = extend_options(ensure_options_with_defaults(options))
       self.token_buffer_manager = token_buffer_manager
     end
 
@@ -12,17 +17,23 @@ module StringCheese
     # with the exception of the raw token type which removes any preceeding
     # single space character before it.
     def to_s
-      results = buffer.each_with_index do |token_buffer, buffer_index|
-        results = token_buffer.map.with_index do |token, token_index|
+      # results = buffer.each_with_index do |token_buffer, buffer_index|
+      #   results = token_buffer.map.with_index do |token, token_index|
+      #     token_value_for(token, buffer_index, token_index)
+      #   end
+      #   results.join
+      # end
+      # results.join
+      buffer.each_with_index.map do |token_buffer, buffer_index|
+        token_buffer.map.with_index do |token, token_index|
           token_value_for(token, buffer_index, token_index)
-        end
-        results.join
-      end
-      results.join
+        end.join
+      end.join
     end
 
     protected
 
+    attr_accessor :options
     attr_accessor :token_buffer_manager
 
     def buffer
@@ -48,7 +59,7 @@ module StringCheese
     end
 
     def previous_buffer_indicies(buffer_index, token_index)
-      # Return nil, nil, if we are at the begining of the first buffer; we
+      # Do not yield, if we are at the begining of the first buffer; we
       # can't move back any further
       return if buffer_index.zero? && token_index.zero?
 
@@ -61,7 +72,7 @@ module StringCheese
       end
       # If we get here, we know that token_index is equal to 0, so we know that
       # the previous token_index would be equal to -1. This means we need to
-      # traverse backwards to the prevoius buffer, and send the token_index of
+      # traverse backwards to the previous buffer, and send the token_index of
       # the last token in the previous buffer.
       buffer_index -= 1
       yield buffer_index, buffer[buffer_index].length - 1
