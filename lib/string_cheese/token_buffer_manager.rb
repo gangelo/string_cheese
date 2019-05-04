@@ -26,6 +26,11 @@ module StringCheese
       buffer.any?
     end
 
+    # Returns the buffer, an Array of TokenBuffers
+    def buffer
+      @buffer
+    end
+
     # Clears the buffer
     def clear_buffer
       self.buffer = []
@@ -34,8 +39,7 @@ module StringCheese
 
     alias initialize_buffer clear_buffer
 
-    # Returns the portion of the buffer starting at the buffer element
-    # pointed to by #buffer_index
+    # Returns the buffer pointed to by #buffer_index
     def current_buffer
       buffer_valid? ? buffer[buffer_index].clone.freeze : []
     end
@@ -47,19 +51,6 @@ module StringCheese
     # Saves the current buffer and pushes a new TokeBuffer onto the buffer stack
     def save_buffer
       push_buffer(TokenBuffer.new)
-    end
-
-    # Returns the buffer as a string. All tokens are suffixed with a space
-    # with the exception of the raw token type which removes any preceeding
-    # single space character before it.
-    def to_s
-      results = buffer.each_with_index do |token_buffer, buffer_index|
-        results = token_buffer.map.with_index do |token, token_index|
-          token_value_for(token, buffer_index, token_index)
-        end
-        results.join
-      end
-      results.join
     end
 
     # Updates all tokens in the buffer with the given vars and labels.
@@ -77,7 +68,7 @@ module StringCheese
 
     protected
 
-    attr_accessor :buffer
+    attr_writer :buffer
     attr_writer :buffer_index
 
     def buffer_valid?
@@ -86,35 +77,6 @@ module StringCheese
 
     def find(token, buffer)
       buffer.select { |buffer_token| buffer_token == token }
-    end
-
-    def previous_token(buffer_index, token_index)
-      # rubocop:disable Metrics/LineLength
-      previous_buffer_indicies(buffer_index, token_index) do |prev_buffer_index, prev_token_index|
-        return buffer[prev_buffer_index][prev_token_index]
-      end
-      # rubocop:enable Metrics/LineLength
-      nil
-    end
-
-    def previous_buffer_indicies(buffer_index, token_index)
-      # Return nil, nil, if we are at the begining of the first buffer; we
-      # can't move back any further
-      return if buffer_index.zero? && token_index.zero?
-
-      # If our prev_token_index is >= zero, we know we can find a previous
-      # token within the same buffer; simply return the current buffer_index
-      # and the prev_token_index
-      if token_index - 1 >= 0
-        yield buffer_index, token_index - 1
-        return
-      end
-      # If we get here, we know that token_index is equal to 0, so we know that
-      # the previous token_index would be equal to -1. This means we need to
-      # traverse backwards to the prevoius buffer, and send the token_index of
-      # the last token in the previous buffer.
-      buffer_index -= 1
-      yield buffer_index, buffer[buffer_index].length - 1
     end
 
     # Pushes a <token_buffer> or a new TokenBuffer onto the buffer stack if
@@ -127,15 +89,6 @@ module StringCheese
 
     def select_vars_and_label_attrs(attrs)
       [select_var_attrs(attrs), select_label_attrs(attrs)]
-    end
-
-    def token_value_for(token, buffer_index, token_index)
-      return token.value(space: :none) if token_index.zero?
-
-      previous_token = previous_token(buffer_index, token_index)
-      return token.value(space: :none) if previous_token.raw?
-
-      token.raw? ? token.value(space: :none) : token.value(space: :before)
     end
 
     def update_buffer(vars, labels, buffer)

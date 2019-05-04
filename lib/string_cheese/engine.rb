@@ -4,6 +4,7 @@ require_relative 'attr_manager'
 require_relative 'errors/invalid_token_option_error'
 require_relative 'helpers/attrs'
 require_relative 'options'
+require_relative 'token_buffer_formatter'
 require_relative 'token_buffer_manager'
 require_relative 'types/action_type'
 require_relative 'label_token'
@@ -99,7 +100,7 @@ module StringCheese
       # TODO: implement these options e.g. debug?
       options = extend_options(ensure_options_with(data_repository.options, options))
       data_repository.buffer_manager.update_current!(data_repository.attr_data)
-      data_repository.buffer_manager.to_s
+      TokenBufferFormatter.new(data_repository.buffer_manager).to_s
     end
 
     protected
