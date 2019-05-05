@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module StringCheese
+  # Provides constants for identifying actions that take place against
+  # attributes
   module ActionType
     # The attr was added
     ATTR_ADD = 1

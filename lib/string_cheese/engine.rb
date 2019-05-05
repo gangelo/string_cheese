@@ -13,6 +13,8 @@ require_relative 'text_token'
 require_relative 'var_token'
 
 module StringCheese
+  # The class that provides the main functionality: managing attributes (vars
+  # and labels) and their values, as well as providing the formatted results
   class Engine
     include AttrManager
     include Helpers::Attrs

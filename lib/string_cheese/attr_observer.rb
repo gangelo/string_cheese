@@ -4,9 +4,11 @@ require_relative 'helpers/options_exist'
 require_relative 'types/action_type'
 
 module StringCheese
+  # Provides callback methods for attribute observers
   module AttrObserver
     include Helpers::OptionsExist
 
+    # Observer update method called after an attr_reader action takes place
     def after_attr_reader_action(method, action_type, *values)
       if options_exist? && current_options.debug?
         puts "after attr_reader action method: :#{method}, action: #{action_type}, values: #{values}"
@@ -17,6 +19,7 @@ module StringCheese
       action_type == ActionType::ATTR_READ ? self : values
     end
 
+    # Observer update method called after an attr_writer action takes place
     def after_attr_writer_action(method, action_type, *values)
       if options_exist? && current_options.debug?
         puts "after attr_writer action method: :#{method}, action: #{action_type}, values: #{values}"
@@ -26,6 +29,8 @@ module StringCheese
       action_type == ActionType::ATTR_WRITE ? values[0] : self
     end
 
+    # Observer update method called before an attr_reader action is to take
+    # place
     def before_attr_reader_action(method, action_type, *values)
       if options_exist? && current_options.debug?
         puts "before attr_reader action method: :#{method}, action: #{action_type}, values: #{values}"
@@ -33,6 +38,8 @@ module StringCheese
       self
     end
 
+    # Observer update method called before an attr_writer action is to take
+    # place
     def before_attr_writer_action(method, action_type, *values)
       if options_exist? && current_options.debug?
         puts "before attr_writer action method: :#{method}, action: #{action_type}, values: #{values}"

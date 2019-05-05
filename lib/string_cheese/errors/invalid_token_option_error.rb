@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module StringCheese
+  # Error to raise to indicate an invalid token option
   class InvalidTokenOptionError < StandardError
     attr_accessor :option
     attr_accessor :object

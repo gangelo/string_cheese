@@ -2,6 +2,7 @@
 
 module StringCheese
   module Helpers
+    # Provides methods for manipulating Hash objects
     module Hash
       module_function
 

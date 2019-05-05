@@ -42,7 +42,7 @@ module StringCheese
     end
 
     def indicies_valid?(buffer_index, token_index)
-      return false if buffer_index < 0 || token_index < 0
+      return false if buffer_index.negative? || token_index.negative?
       return false if buffer.nil? || buffer.empty?
       return false unless buffer_index < buffer.length
 
@@ -81,7 +81,8 @@ module StringCheese
     end
 
     def token_value_for(token, buffer_index, token_index)
-      return token.value(space: :none) if buffer_index.zero? && token_index.zero?
+      return token.value(space: :none) \
+        if buffer_index.zero? && token_index.zero?
 
       previous_token = previous_token(buffer_index, token_index)
       return token.value(space: :none) if previous_token.raw?

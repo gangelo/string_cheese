@@ -2,6 +2,9 @@
 
 module StringCheese
   module Helpers
+    # Provides a set of methods to allow for identification of attribute
+    # types (i.e. readers, writers labels, vars, etc.) and conversion of one
+    # attribute type to another
     module Attrs
       module_function
 

@@ -7,6 +7,10 @@ require_relative 'helpers/Hash'
 require_relative 'types/action_type'
 
 module StringCheese
+  # Provides functionality and management of dynamically created attributes
+  # (methods). Attributes are created and added to the current receiver and
+  # recorded in required attribute data repository called
+  # #data_repository.attr_data.
   module AttrManager
     include AttrObserver
     include Helpers::Attrs
@@ -82,8 +86,6 @@ module StringCheese
       define_singleton_method(method) do |*args|
         method = to_attr_reader(method)
         before_attr_writer_action(method, ActionType::ATTR_WRITE, data_repository.attr_data[method])
-        # TODO: Accomodate before ActionType::CHANGE
-        # TODO: Accomodate after ActionType::CHANGE
         value = data_repository.attr_data[method] = args[0]
         after_attr_writer_action(method, ActionType::ATTR_WRITE, value)
       end
