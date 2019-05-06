@@ -62,13 +62,14 @@ module StringCheese
       return if data_repository.attr_data.respond_to?(method)
 
       data_repository.attr_data[method] = value
-      before_attr_reader_action(method, ActionType::ATTR_ADD, value)
-      define_singleton_method(method) do |*_args|
-        before_attr_reader_action(method, ActionType::ATTR_READ, value)
-        value = data_repository.attr_data[method]
-        after_attr_reader_action(method, ActionType::ATTR_READ, value)
+      before_attr_reader_action(method, ActionType::ATTR_ADD, value) do
+        define_singleton_method(method) do |*_args|
+          before_attr_reader_action(method, ActionType::ATTR_READ, value)
+          value = data_repository.attr_data[method]
+          after_attr_reader_action(method, ActionType::ATTR_READ, value)
+        end
+        after_attr_reader_action(method, ActionType::ATTR_ADD, value)
       end
-      after_attr_reader_action(method, ActionType::ATTR_ADD, value)
     end
 
     def define_attr_writer(method)
@@ -82,14 +83,15 @@ module StringCheese
       # return if data_repository.attr_data.respond_to?(method)
       return if respond_to?(method)
 
-      before_attr_writer_action(method, ActionType::ATTR_ADD)
-      define_singleton_method(method) do |*args|
-        method = to_attr_reader(method)
-        before_attr_writer_action(method, ActionType::ATTR_WRITE, data_repository.attr_data[method])
-        value = data_repository.attr_data[method] = args[0]
-        after_attr_writer_action(method, ActionType::ATTR_WRITE, value)
+      before_attr_writer_action(method, ActionType::ATTR_ADD) do
+        define_singleton_method(method) do |*args|
+          method = to_attr_reader(method)
+          before_attr_writer_action(method, ActionType::ATTR_WRITE, data_repository.attr_data[method])
+          value = data_repository.attr_data[method] = args[0]
+          after_attr_writer_action(method, ActionType::ATTR_WRITE, value)
+        end
+        after_attr_writer_action(method, ActionType::ATTR_ADD)
       end
-      after_attr_writer_action(method, ActionType::ATTR_ADD)
     end
 
     # def respond_to?(symbol)

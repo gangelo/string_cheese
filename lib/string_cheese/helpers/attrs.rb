@@ -6,6 +6,36 @@ module StringCheese
     # types (i.e. readers, writers labels, vars, etc.) and conversion of one
     # attribute type to another
     module Attrs
+
+      # Returns true if <method> has an associated attr_accessor sybling
+      # method defined on the receiver.
+      #
+      # @param method [Symbol] the method whose sybling is to be returned.
+      #
+      # @return [Boolean] whether or not the sybing method is defined.
+      #
+      # @example
+      #
+      # class Klass
+      #   include StringCheese::Helpers::Attrs
+      #
+      #   attr_reader :test_1
+      #   attr_writer :test_2
+      #   attr_accessor :test_3
+      # end
+      #
+      # klass = Klass.new
+      # klass.attr_accessor_sybling?(:test_1) # => false
+      # klass.attr_accessor_sybling?(:test_2) # => false
+      # klass.attr_accessor_sybling?(:test_3) # => true
+      # klass.attr_accessor_sybling?(:test_3) # => true
+      #
+      def attr_accessor_sybling?(method)
+        attr_accessor_sybling = attr_reader?(method) ? to_attr_writer(method) \
+                                                     : to_attr_reader(method)
+        respond_to?(attr_accessor_sybling)
+      end
+
       module_function
 
       #
@@ -14,6 +44,23 @@ module StringCheese
       def attr_reader?(method)
         method = method.to_s
         method =~ /[\w!?=]+[^=]\z/
+      end
+
+      # Returns the name of the attr_accessor sybling method associated with
+      # <method>. Neither <method> nor <sybling> are checked to ensure they are
+      # defined on the receiver.
+      #
+      # @param method [Symbol] the method whose sybling is to be returned.
+      #
+      # @return [Symbol] the sybling method.
+      #
+      # @example
+      #
+      # Attrs.attr_accessor_sybling(:test=) # => :test
+      # Attrs.attr_accessor_sybling(:test) # => :test=
+      #
+      def attr_accessor_sybling(method)
+        attr_reader?(method) ? to_attr_writer(method) : to_attr_reader(method)
       end
 
       def attr_writer?(method)

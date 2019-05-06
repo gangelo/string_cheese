@@ -16,20 +16,13 @@ RSpec.describe StringCheese::Engine do
     end
   end
 
-  describe '' do
-    context '' do
-    end
-  end
-
   describe '<label>=' do
     context 'when assigning a value to an existing label' do
-      let(:expected_results) { 'New Var 1 Label and New Var 2 Label' }
-
       it 'assigns the value' do
         engine.var_1_label = 'New Label Value 1'
         engine.var_2_label = 'New Label Value 2'
-        expect(engine.data_repository.attr_data.var_1_label).to eq('New Label Value 1')
-        expect(engine.data_repository.attr_data.var_2_label).to eq('New Label Value 2')
+        expect(engine.data_repository.var_1_label).to eq('New Label Value 1')
+        expect(engine.data_repository.var_2_label).to eq('New Label Value 2')
       end
     end
 
@@ -37,8 +30,8 @@ RSpec.describe StringCheese::Engine do
       it 'creates a new label and assigns the value' do
         engine.new_1_label = 'New Label 1'
         engine.new_2_label = 'New Label 2'
-        expect(engine.data_repository.attr_data.new_1_label).to eq('New Label 1')
-        expect(engine.data_repository.attr_data.new_2_label).to eq('New Label 2')
+        expect(engine.data_repository.new_1_label).to eq('New Label 1')
+        expect(engine.data_repository.new_2_label).to eq('New Label 2')
       end
     end
   end
@@ -50,17 +43,19 @@ RSpec.describe StringCheese::Engine do
       it 'assigns the value' do
         engine.var_1 = 11
         engine.var_2 = 22
-        expect(engine.data_repository.attr_data.var_1).to eq(11)
-        expect(engine.data_repository.attr_data.var_2).to eq(22)
+        expect(engine.data_repository.var_1).to eq(11)
+        expect(engine.data_repository.var_2).to eq(22)
       end
     end
 
     context 'when assigning a value to a var that does not exist' do
       it 'creates a new label and assigns the value' do
-        engine.new_var_1 = :new_var_1
-        engine.new_var_2 = :new_var_2
-        expect(engine.data_repository.attr_data.new_var_1).to eq(:new_var_1)
-        expect(engine.data_repository.attr_data.new_var_2).to eq(:new_var_2)
+        engine.new_var_1 = 1
+        engine.new_var_2 = 2
+        expect(engine.data_repository.new_var_1).to eq(1)
+        expect(engine.data_repository.new_var_2).to eq(2)
+        expect(engine.data_repository.new_var_1_label).to eq(:new_var_1)
+        expect(engine.data_repository.new_var_2_label).to eq(:new_var_2)
       end
     end
   end

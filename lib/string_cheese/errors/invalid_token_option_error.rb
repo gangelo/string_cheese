@@ -1,14 +1,12 @@
-# frozen_string_literal: true
-
 module StringCheese
   # Error to raise to indicate an invalid token option
   class InvalidTokenOptionError < StandardError
     attr_accessor :option
-    attr_accessor :object
+    attr_accessor :klass_object
 
-    def initialize(option, object = nil)
+    def initialize(option, klass_object = nil)
       self.option = option
-      self.object = object
+      self.klass_object = klass_object
       super(format_message)
     end
 
@@ -17,7 +15,7 @@ module StringCheese
     def format_message
       message = ''
       message << "Option [:#{option}] is invalid for the Object type"
-      message << " [#{object.class.name}]" unless object.nil?
+      message << " [#{klass_object.class.name}]" unless klass_object.nil?
     end
   end
 end
