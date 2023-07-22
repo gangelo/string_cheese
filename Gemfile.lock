@@ -59,7 +59,7 @@ GEM
       rubocop (>= 0.67.0)
     ruby-progressbar (1.10.0)
     thread_safe (0.3.6)
-    tzinfo (1.2.5)
+    tzinfo (1.2.11)
       thread_safe (~> 0.1)
     unicode-display_width (1.5.0)
     yard (0.9.19)
